@@ -1,0 +1,46 @@
+{
+  "books": [
+    {
+      "id": "mucjisada_aroortii",
+      "title": "Mucjisada Aroortii",
+      "author": "Hal Elrod",
+      "categories": ["Somali Literature", "Self-Help"],
+      "searchTerms": ["mucjisada", "aroortii", "hal elrod", "self help", "guul", "subax"]
+    },
+    {
+      "id": "falsafadda_jiraalnimadu",
+      "title": "Falsafadda Jiraalnimadu Waa Insaannimo",
+      "author": "Jaan Bool Saartar",
+      "categories": ["Philosophy", "Humanism"],
+      "searchTerms": ["falsafad", "jiraalnimo", "insaannimo", "philosophy"]
+    },
+    {
+      "id": "50_talooyin_caafimaad",
+      "title": "50 Talooyin Caafimaad Ah",
+      "author": "Ibnu Qayyim Al-Jawziyah",
+      "categories": ["Health", "Islamic Teachings"],
+      "searchTerms": ["caafimaad", "talo", "ibnu qayyim", "islamic", "health"]
+    },
+    {
+      "id": "arimaha_somalia",
+      "title": "Arimaha ka Taagan Soomaaliya Maxaa Xal u ah?",
+      "author": "Sheekh Dr. Cuthmaan Macallim Maxamuud",
+      "categories": ["Politics", "Islamic Teachings"],
+      "searchTerms": ["soomaaliya", "xal", "siyaasad", "politics", "islamic"]
+    },
+    {
+      "id": "baro_chatgpt_prompts",
+      "title": "Hada Baro ChatGPT Prompts",
+      "author": "Mahamed Yasin Mohamoud",
+      "categories": ["Technology", "Artificial Intelligence"],
+      "searchTerms": ["chatgpt", "ai", "technology", "artificial intelligence", "prompt"]
+    },
+    {
+      "id": "casharo_nololeed",
+      "title": "Casharo Nololeed: Xasuusihii Sheekh Cali Al-Dandaawi",
+      "author": "Cabdi Jabbaar Dawla",
+      "categories": ["Biography", "Islamic Teachings"],
+      "searchTerms": ["casharo", "nololeed", "sheekh", "xasuus", "biography", "islamic"]
+    }
+  ]
+}

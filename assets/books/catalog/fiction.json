@@ -1,0 +1,18 @@
+[
+  {
+    "id": "mucjisada_aroortii",
+    "title": "Mucjisada Aroortii",
+    "author": "Hal Elrod",
+    "price": 24.99,
+    "imageAssetPath": "assets/books/images/mucjisada_aroortii.jpg",
+    "pdfAssetPath": "assets/books/pdfs/mucjisada_aroortii.pdf",
+    "rating": 5.0,
+    "categories": ["Somali Literature", "Self-Help"],
+    "description": "Buuggani wuxuu si cilmiyeysan uga hadlayaa sida aad subax walba ugu bilowdo ficillo dhiirrigelinaya, kaas oo kuu horseedi kara guulo weyn noloshaada.",
+    "language": "Somali",
+    "pages": 304,
+    "publisher": "Somali Library",
+    "publishedDate": "2024",
+    "isbn": ""
+  }
+]

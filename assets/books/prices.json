@@ -1,0 +1,56 @@
+{
+  "prices": {
+    "mucjisada_aroortii": {
+      "price": 24.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 29.99
+    },
+    "falsafadda_jiraalnimadu": {
+      "price": 19.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 24.99
+    },
+    "50_talooyin_caafimaad": {
+      "price": 11.99,
+      "currency": "USD",
+      "discounted": false,
+      "originalPrice": 11.99
+    },
+    "arimaha_somalia": {
+      "price": 29.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 37.99
+    },
+    "baro_chatgpt_prompts": {
+      "price": 14.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 19.99
+    },
+    "casharo_nololeed": {
+      "price": 34.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 37.99
+    }
+  },
+  "currencies": {
+    "USD": {
+      "symbol": "$",
+      "name": "US Dollar",
+      "exchangeRate": 1.0
+    }
+  },
+  "discounts": {
+    "holiday_sale": {
+      "name": "Holiday Sale",
+      "startDate": "2024-12-14T00:00:00+03:00",
+      "endDate": "2024-12-31T23:59:59+03:00",
+      "discountPercentage": 20
+    }
+  },
+  "lastUpdated": "2024-12-14T13:49:38+03:00"
+}
