@@ -35,6 +35,12 @@
       "currency": "USD",
       "discounted": true,
       "originalPrice": 37.99
+    },
+    "xakameynta_waqtiga": {
+      "price": 19.99,
+      "currency": "USD",
+      "discounted": false,
+      "originalPrice": 19.99
     }
   },
   "currencies": {

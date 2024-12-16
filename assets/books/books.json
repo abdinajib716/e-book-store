@@ -1,5 +1,21 @@
 [
   {
+    "id": "xakameynta_waqtiga",
+    "title": "Xakameynta Waqtiga",
+    "author": "Unknown",
+    "price": 19.99,
+    "imageAssetPath": "assets/books/images/xakameynta_waqtiga.jpg",
+    "pdfAssetPath": "assets/books/pdfs/xakameynta_waqtiga.pdf",
+    "rating": 4.5,
+    "categories": ["Self-Help", "Time Management"],
+    "description": "Buug ku saabsan sida loo maareeyo waqtiga si wax ku ool ah.",
+    "language": "Somali",
+    "pages": 100,
+    "publisher": "Somali Library",
+    "publishedDate": "2024",
+    "isbn": ""
+  },
+  {
     "id": "mucjisada_aroortii",
     "title": "Mucjisada Aroortii",
     "author": "Hal Elrod",
@@ -129,5 +145,21 @@
     "publisher": "Islamic Books Publishing",
     "publishedDate": "2023",
     "isbn": "978-0987654321"
+  },
+  {
+    "id": "xakameynta_waqtiga",
+    "title": "Xakameynta Waqtiga",
+    "author": "Brian Tracy (Tarjumay: Nuurdeeq Cabdullaahi Xaashe)",
+    "price": 19.99,
+    "imageAssetPath": "assets/books/images/xakameynta_waqtiga.jpg",
+    "pdfAssetPath": "assets/books/pdfs/xakameynta_waqtiga.pdf",
+    "rating": 4.8,
+    "categories": ["Somali Literature", "Self-Help"],
+    "description": "Buuggani wuxuu si cilmiyeysan uga hadlayaa sida waqtiga loo maareeyo iyo habka looga hortago waxyaalaha waqtiga lumiyo. Waxaa laga tarjumay buugga Brian Tracy oo khabiir ku ah maaraynta waqtiga.",
+    "language": "Somali",
+    "pages": 98,
+    "publisher": "Somali Library",
+    "publishedDate": "2024",
+    "isbn": "978-99999-999-9"
   }
 ]

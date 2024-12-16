@@ -1,6 +1,14 @@
 {
   "books": [
     {
+      "id": "xakameynta_waqtiga",
+      "title": "Xakameynta Waqtiga",
+      "author": "Unknown",
+      "description": "Buug ku saabsan sida loo maareeyo waqtiga si wax ku ool ah.",
+      "categories": ["Self-Help", "Time Management"],
+      "searchTerms": ["xakameynta", "waqtiga", "self help", "time management"]
+    },
+    {
       "id": "mucjisada_aroortii",
       "title": "Mucjisada Aroortii",
       "author": "Hal Elrod",
@@ -36,11 +44,11 @@
       "searchTerms": ["chatgpt", "ai", "technology", "artificial intelligence", "prompt"]
     },
     {
-      "id": "casharo_nololeed",
-      "title": "Casharo Nololeed: Xasuusihii Sheekh Cali Al-Dandaawi",
-      "author": "Cabdi Jabbaar Dawla",
-      "categories": ["Biography", "Islamic Teachings"],
-      "searchTerms": ["casharo", "nololeed", "sheekh", "xasuus", "biography", "islamic"]
+      "id": "xakameynta_waqtiga",
+      "title": "Xakameynta Waqtiga",
+      "author": "Brian Tracy (Tarjumay: Nuurdeeq Cabdullaahi Xaashe)",
+      "categories": ["Somali Literature", "Self-Help"],
+      "searchTerms": ["xakameynta", "waqtiga", "brian tracy", "self help", "guul", "subax"]
     }
   ]
 }
