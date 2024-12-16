@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/wishlist_provider.dart';
+import '../constants/styles.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +46,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'John Doe',
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      style: AppStyles.headingStyle,
                     ),
                   ],
                 ),
@@ -133,10 +130,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Text(
                         'Sign Out',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppStyles.subheadingStyle,
                       ),
                     ),
                   ),
@@ -159,17 +153,7 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: AppStyles.cardDecoration,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -197,17 +181,11 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppStyles.headingStyle,
                       ),
                       Text(
                         subtitle,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: AppStyles.bodyStyle,
                       ),
                     ],
                   ),
@@ -224,11 +202,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Text(
                       trailing,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppStyles.subheadingStyle,
                     ),
                   ),
                 if (trailing == null)

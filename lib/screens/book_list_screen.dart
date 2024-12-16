@@ -9,10 +9,10 @@ class BookListScreen extends StatelessWidget {
   final List<Book> books;
 
   const BookListScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.books,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,11 @@ class BookListScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.tune_rounded),
+            icon: const Icon(Icons.tune_rounded),
             onPressed: () {},
           ),
         ],
@@ -38,8 +38,8 @@ class BookListScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.book_outlined, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
+                  const Icon(Icons.book_outlined, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
                   Text(
                     'No books available in this category',
                     style: GoogleFonts.poppins(
@@ -51,7 +51,7 @@ class BookListScreen extends StatelessWidget {
               ),
             )
           : GridView.builder(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.75,

@@ -10,9 +10,10 @@ import '../screens/categories_screen.dart';
 import '../screens/wishlist_screen.dart';
 import '../screens/profile_screen.dart';
 import '../providers/cart_provider.dart';
+import '../constants/styles.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_books.isEmpty) {
@@ -59,14 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.book_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
+            const Icon(Icons.book_outlined, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
             Text(
               'No books available',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                color: Colors.grey[600],
-              ),
+              style: AppStyles.subheadingStyle,
             ),
           ],
         ),
@@ -79,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
           floating: true,
           title: Text(
             'Book Store',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            style: AppStyles.headingStyle,
           ),
           actions: [
             IconButton(
@@ -94,22 +92,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Welcome back!',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppStyles.headingStyle,
                 ),
                 Text(
                   'Discover your next favorite book',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                  ),
+                  style: AppStyles.subheadingStyle,
                 ),
               ],
             ),
@@ -117,11 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         if (_books.isNotEmpty)
           SliverToBoxAdapter(
-            child: Container(
+            child: SizedBox(
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _books.length.clamp(0, 5),
                 itemBuilder: (context, index) => _buildFeaturedBook(
                   context,
@@ -132,24 +125,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Popular Books',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppStyles.headingStyle,
                 ),
                 TextButton(
                   onPressed: () {},
                   child: Text(
                     'See All',
-                    style: GoogleFonts.poppins(
-                      color: Theme.of(context).primaryColor,
-                    ),
+                    style: AppStyles.subheadingStyle.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -157,9 +145,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 0.75,
               crossAxisSpacing: 16,
@@ -175,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: SizedBox(height: 16),
         ),
       ],
@@ -194,12 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: 300,
-        margin: EdgeInsets.only(right: 16),
+        margin: const EdgeInsets.only(right: 16),
         child: Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+              decoration: AppStyles.cardDecoration.copyWith(
                 image: DecorationImage(
                   image: AssetImage(book.imageAssetPath),
                   fit: BoxFit.cover,
@@ -228,17 +215,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     book.title,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppStyles.headingStyle.copyWith(color: Colors.white),
                   ),
                   Text(
                     book.author,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
+                    style: AppStyles.subheadingStyle.copyWith(color: Colors.white.withOpacity(0.8)),
                   ),
                 ],
               ),

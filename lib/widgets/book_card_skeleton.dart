@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import '../constants/styles.dart';
 
 class BookCardSkeleton extends StatelessWidget {
   const BookCardSkeleton({super.key});
@@ -16,10 +17,7 @@ class BookCardSkeleton extends StatelessWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.grey.withOpacity(0.2),
-          ),
+          decoration: AppStyles.cardDecoration,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

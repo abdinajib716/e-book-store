@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../constants/styles.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,7 @@ class CartScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Cart',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          style: AppStyles.headingStyle,
         ),
         actions: [
           Consumer<CartProvider>(
@@ -26,24 +27,24 @@ class CartScreen extends StatelessWidget {
                       builder: (ctx) => AlertDialog(
                         title: Text(
                           'Clear Cart',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                          style: AppStyles.headingStyle,
                         ),
                         content: Text(
                           'Are you sure you want to clear your cart?',
-                          style: GoogleFonts.poppins(),
+                          style: AppStyles.bodyStyle,
                         ),
                         actions: [
                           TextButton(
                             child: Text(
                               'Cancel',
-                              style: GoogleFonts.poppins(),
+                              style: AppStyles.bodyStyle,
                             ),
                             onPressed: () => Navigator.of(ctx).pop(),
                           ),
                           TextButton(
                             child: Text(
                               'Clear',
-                              style: GoogleFonts.poppins(color: Colors.red),
+                              style: AppStyles.bodyStyle.copyWith(color: AppStyles.errorColor),
                             ),
                             onPressed: () {
                               cart.clear();
@@ -76,19 +77,14 @@ class CartScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
+                    style: AppStyles.subheadingStyle.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(
                       'Continue Shopping',
-                      style: GoogleFonts.poppins(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      style: AppStyles.bodyStyle.copyWith(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ],
@@ -110,7 +106,7 @@ class CartScreen extends StatelessWidget {
                       background: Container(
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
-                        color: Colors.red,
+                        color: AppStyles.errorColor,
                         child: const Icon(
                           Icons.delete,
                           color: Colors.white,
@@ -130,15 +126,31 @@ class CartScreen extends StatelessWidget {
                           ),
                           title: Text(
                             book.title,
-                            style: GoogleFonts.poppins(
+                            style: AppStyles.headingStyle.copyWith(
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          subtitle: Text(
-                            '\$${(book.price * cartItem.quantity).toStringAsFixed(2)}',
-                            style: GoogleFonts.poppins(
-                              color: Theme.of(context).primaryColor,
-                            ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '\$${(book.price * cartItem.quantity).toStringAsFixed(2)}',
+                                style: AppStyles.bodyStyle.copyWith(
+                                  color: AppStyles.primaryColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (book.isDiscounted)
+                                Text(
+                                  'You save: \$${((book.originalPrice - book.price) * cartItem.quantity).toStringAsFixed(2)}',
+                                  style: AppStyles.bodyStyle.copyWith(
+                                    color: AppStyles.successColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                            ],
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -151,7 +163,7 @@ class CartScreen extends StatelessWidget {
                               ),
                               Text(
                                 '${cartItem.quantity}',
-                                style: GoogleFonts.poppins(),
+                                style: AppStyles.bodyStyle,
                               ),
                               IconButton(
                                 icon: const Icon(Icons.add),
@@ -188,12 +200,15 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Total Items:',
-                          style: GoogleFonts.poppins(),
+                          style: AppStyles.bodyStyle.copyWith(
+                            fontSize: 14,
+                            color: AppStyles.subtitleColor,
+                          ),
                         ),
                         Text(
                           '${cart.totalQuantity}',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
+                          style: AppStyles.headingStyle.copyWith(
+                            fontSize: 16,
                           ),
                         ),
                       ],
@@ -204,13 +219,16 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Total Amount:',
-                          style: GoogleFonts.poppins(),
+                          style: AppStyles.bodyStyle.copyWith(
+                            fontSize: 14,
+                            color: AppStyles.subtitleColor,
+                          ),
                         ),
                         Text(
                           '\$${cart.totalAmount.toStringAsFixed(2)}',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).primaryColor,
+                          style: AppStyles.headingStyle.copyWith(
+                            fontSize: 18,
+                            color: AppStyles.primaryColor,
                           ),
                         ),
                       ],
@@ -219,8 +237,8 @@ class CartScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'You save: \$${cart.savings.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.green,
+                        style: AppStyles.bodyStyle.copyWith(
+                          color: AppStyles.successColor,
                           fontSize: 12,
                         ),
                         textAlign: TextAlign.end,
@@ -228,17 +246,20 @@ class CartScreen extends StatelessWidget {
                     ],
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      style: AppStyles.primaryButtonStyle.copyWith(
+                        minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 48),
+                        ),
                       ),
                       onPressed: () {
                         // TODO: Implement checkout
                       },
                       child: Text(
                         'Proceed to Checkout',
-                        style: GoogleFonts.poppins(),
+                        style: AppStyles.bodyStyle.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

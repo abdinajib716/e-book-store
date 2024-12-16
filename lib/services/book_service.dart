@@ -19,7 +19,7 @@ class BookService {
       final List<dynamic> items = json.decode(jsonString);
 
       // Load prices
-      final String pricesPath = '$_basePath/prices.json';
+      const String pricesPath = '$_basePath/prices.json';
       final String pricesJsonString = await rootBundle.loadString(pricesPath);
       final Map<String, dynamic> pricesData = json.decode(pricesJsonString);
 
@@ -27,12 +27,12 @@ class BookService {
 
       for (var item in items) {
         final String bookId = item['id'];
-        final Map<String, dynamic> priceInfo = 
-            pricesData['prices'][bookId] ?? {
-          'price': item['price'] ?? 19.99,
-          'originalPrice': item['price'] ?? 19.99,
-          'discounted': false,
-        };
+        final Map<String, dynamic> priceInfo = pricesData['prices'][bookId] ??
+            {
+              'price': item['price'] ?? 19.99,
+              'originalPrice': item['price'] ?? 19.99,
+              'discounted': false,
+            };
 
         // Fix image and PDF paths
         String imageAssetPath = item['imageAssetPath'] ?? '';
@@ -53,7 +53,8 @@ class BookService {
           imageAssetPath: imageAssetPath,
           pdfAssetPath: pdfAssetPath,
           price: (priceInfo['price'] ?? item['price'] ?? 19.99).toDouble(),
-          originalPrice: (priceInfo['originalPrice'] ?? item['price'] ?? 19.99).toDouble(),
+          originalPrice:
+              (priceInfo['originalPrice'] ?? item['price'] ?? 19.99).toDouble(),
           isDiscounted: priceInfo['discounted'] ?? false,
           language: item['language'] ?? 'Somali',
           pages: item['pages'] ?? 0,

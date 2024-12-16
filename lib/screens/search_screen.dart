@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../constants/styles.dart';
 import '../models/book.dart';
 import '../services/search_service.dart';
 import '../widgets/book_card.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({super.key});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -61,10 +61,10 @@ class _SearchScreenState extends State<SearchScreen> {
           controller: _searchController,
           decoration: InputDecoration(
             hintText: 'Search books...',
-            hintStyle: GoogleFonts.poppins(),
+            hintStyle: AppStyles.headingStyle,
             border: InputBorder.none,
           ),
-          style: GoogleFonts.poppins(),
+          style: AppStyles.headingStyle,
           onChanged: (value) => _performSearch(value),
         ),
       ),
@@ -75,20 +75,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.search,
                         size: 64,
                         color: Colors.grey,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         _searchController.text.isEmpty
                             ? 'Start typing to search'
                             : 'No books found',
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                        ),
+                        style: AppStyles.bodyStyle,
                       ),
                     ],
                   ),
@@ -103,7 +100,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   itemCount: _searchResults.length,
                   itemBuilder: (context, index) {
-                    return BookCard(book: _searchResults[index]);
+                    return BookCard(
+                      book: _searchResults[index],
+                    );
                   },
                 ),
     );

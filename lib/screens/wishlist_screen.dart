@@ -6,6 +6,7 @@ import '../models/book.dart';
 import '../providers/cart_provider.dart';
 import '../providers/wishlist_provider.dart';
 import 'book_details_screen.dart';
+import '../constants/styles.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -16,9 +17,7 @@ class WishlistScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Wishlist',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppStyles.headingStyle,
         ),
         actions: [
           IconButton(
@@ -27,24 +26,25 @@ class WishlistScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: Text('Clear Wishlist', style: GoogleFonts.poppins()),
+                  title: Text('Clear Wishlist', style: AppStyles.headingStyle),
                   content: Text(
                     'Are you sure you want to clear your wishlist?',
-                    style: GoogleFonts.poppins(),
+                    style: AppStyles.headingStyle,
                   ),
                   actions: [
                     TextButton(
-                      child: Text('Cancel', style: GoogleFonts.poppins()),
+                      child: Text('Cancel', style: AppStyles.headingStyle),
                       onPressed: () => Navigator.of(ctx).pop(),
                     ),
                     TextButton(
-                      child: Text('Clear', style: GoogleFonts.poppins()),
+                      child: Text('Clear', style: AppStyles.headingStyle),
                       onPressed: () {
-                        Provider.of<WishlistProvider>(context, listen: false).clear();
+                        Provider.of<WishlistProvider>(context, listen: false)
+                            .clear();
                         Navigator.of(ctx).pop();
                         Fluttertoast.showToast(
                           msg: 'Wishlist cleared',
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppStyles.errorColor,
                           textColor: Colors.white,
                         );
                       },
@@ -63,7 +63,7 @@ class WishlistScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.favorite_border,
                     size: 64,
                     color: Colors.grey,
@@ -71,18 +71,12 @@ class WishlistScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Your wishlist is empty',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Add some books to get started',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                 ],
               ),
@@ -163,7 +157,7 @@ class WishlistItem extends StatelessWidget {
                           wishlist.toggleWishlist(book);
                           Fluttertoast.showToast(
                             msg: '${book.title} removed from wishlist',
-                            backgroundColor: Colors.red,
+                            backgroundColor: AppStyles.errorColor,
                             textColor: Colors.white,
                           );
                         },
@@ -182,20 +176,14 @@ class WishlistItem extends StatelessWidget {
                     book.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     book.author,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -203,25 +191,26 @@ class WishlistItem extends StatelessWidget {
                     children: [
                       Text(
                         '\$${book.price.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
+                        style: AppStyles.headingStyle,
                       ),
                       Consumer<CartProvider>(
                         builder: (context, cart, _) {
                           final isInCart = cart.items.containsKey(book.id);
                           return IconButton(
                             icon: Icon(
-                              isInCart ? Icons.shopping_cart : Icons.add_shopping_cart_outlined,
-                              color: isInCart ? Colors.green : Theme.of(context).primaryColor,
+                              isInCart
+                                  ? Icons.shopping_cart
+                                  : Icons.add_shopping_cart_outlined,
+                              color: isInCart
+                                  ? AppStyles.successColor
+                                  : AppStyles.primaryColor,
                             ),
                             onPressed: () {
                               if (!isInCart) {
                                 cart.addItem(book);
                                 Fluttertoast.showToast(
                                   msg: '${book.title} added to cart',
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: AppStyles.successColor,
                                   textColor: Colors.white,
                                 );
                               } else {

@@ -12,7 +12,8 @@ class SearchService {
   Future<void> _loadSearchIndex() async {
     if (_searchIndex != null) return;
 
-    final String jsonString = await rootBundle.loadString('assets/books/catalog/search_index.json');
+    final String jsonString =
+        await rootBundle.loadString('assets/books/catalog/search_index.json');
     _searchIndex = json.decode(jsonString);
   }
 
@@ -28,8 +29,8 @@ class SearchService {
       final String author = data['author'].toString().toLowerCase();
       final String category = data['category'].toString().toLowerCase();
 
-      if (title.contains(query) || 
-          author.contains(query) || 
+      if (title.contains(query) ||
+          author.contains(query) ||
           category.contains(query)) {
         matchingIds.add(id);
       }
@@ -43,9 +44,7 @@ class SearchService {
         (book) => book.id == id,
         orElse: () => null as Book,
       );
-      if (book != null) {
-        results.add(book);
-      }
+      results.add(book);
     }
 
     return results;

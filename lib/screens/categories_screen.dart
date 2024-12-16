@@ -3,54 +3,55 @@ import 'package:google_fonts/google_fonts.dart';
 import '../widgets/category_card.dart';
 import './book_list_screen.dart';
 import '../services/book_service.dart';
+import '../constants/styles.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({Key? key}) : super(key: key);
+  const CategoriesScreen({super.key});
 
   static const List<Map<String, dynamic>> categories = [
-    const {
+    {
       'title': 'Somali Literature',
       'icon': Icons.auto_stories,
       'color': Colors.blue,
       'category': 'somali_literature'
     },
-    const {
+    {
       'title': 'Fiction',
       'icon': Icons.menu_book,
       'color': Colors.green,
       'category': 'fiction'
     },
-    const {
+    {
       'title': 'Non-Fiction',
       'icon': Icons.library_books,
       'color': Colors.orange,
       'category': 'non_fiction'
     },
-    const {
+    {
       'title': 'Children',
       'icon': Icons.child_care,
       'color': Colors.purple,
       'category': 'children'
     },
-    const {
+    {
       'title': 'Education',
       'icon': Icons.school,
       'color': Colors.red,
       'category': 'education'
     },
-    const {
+    {
       'title': 'History',
       'icon': Icons.history_edu,
       'color': Colors.brown,
       'category': 'history'
     },
-    const {
+    {
       'title': 'Religion',
       'icon': Icons.mosque,
       'color': Colors.teal,
       'category': 'religion'
     },
-    const {
+    {
       'title': 'Poetry',
       'icon': Icons.format_quote,
       'color': Colors.indigo,
@@ -64,14 +65,14 @@ class CategoriesScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         title: Text('Discover Books',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            style: AppStyles.headingStyle),
         actions: [
           IconButton(
-            icon: Icon(Icons.search_rounded),
+            icon: const Icon(Icons.search_rounded),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.tune_rounded),
+            icon: const Icon(Icons.tune_rounded),
             onPressed: () {},
           ),
         ],
@@ -79,19 +80,16 @@ class CategoriesScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
               'Categories',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppStyles.subheadingStyle,
             ),
           ),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 1.1,
                 crossAxisSpacing: 16,
@@ -125,7 +123,9 @@ class CategoriesScreen extends StatelessWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Error loading books: $e'),
+                            content: Text('Error loading books: $e',
+                              style: AppStyles.bodyStyle,
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -191,11 +191,7 @@ class CategoryCard extends StatelessWidget {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppStyles.bodyStyle,
               ),
             ],
           ),

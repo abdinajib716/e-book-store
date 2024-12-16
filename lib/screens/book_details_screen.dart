@@ -5,11 +5,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../models/book.dart';
 import '../providers/cart_provider.dart';
 import '../providers/wishlist_provider.dart';
+import '../constants/styles.dart';
 
 class BookDetailsScreen extends StatelessWidget {
   final Book book;
 
-  const BookDetailsScreen({Key? key, required this.book}) : super(key: key);
+  const BookDetailsScreen({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,8 @@ class BookDetailsScreen extends StatelessWidget {
                           : '${book.title} added to wishlist';
                       Fluttertoast.showToast(
                         msg: message,
-                        backgroundColor: isInWishlist ? Colors.red : Colors.green,
+                        backgroundColor:
+                            isInWishlist ? AppStyles.errorColor : AppStyles.successColor,
                       );
                     },
                   );
@@ -97,18 +99,12 @@ class BookDetailsScreen extends StatelessWidget {
                 children: [
                   Text(
                     book.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     book.author,
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: AppStyles.bodyStyle,
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -132,18 +128,12 @@ class BookDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     'About this book',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppStyles.headingStyle,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     book.description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      height: 1.6,
-                    ),
+                    style: AppStyles.bodyStyle,
                   ),
                 ],
               ),
@@ -213,7 +203,9 @@ class BookDetailsScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: isInCart ? Colors.green : Theme.of(context).primaryColor,
+                        backgroundColor: isInCart
+                            ? AppStyles.successColor
+                            : AppStyles.primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
