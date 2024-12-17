@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 import '../widgets/book_card.dart';
+import './search_screen.dart';
 
 class BookListScreen extends StatelessWidget {
   final String title;
@@ -24,11 +25,14 @@ class BookListScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search_rounded),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.tune_rounded),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(initialBooks: books),
+                ),
+              );
+            },
           ),
         ],
       ),

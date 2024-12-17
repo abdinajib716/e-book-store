@@ -9,7 +9,9 @@ import '../widgets/cart_badge.dart';
 import '../utils/debouncer.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final List<Book>? initialBooks;
+
+  const SearchScreen({super.key, this.initialBooks});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -23,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _hasError = false;
   String _errorMessage = '';
   bool _isInitialState = true;
+  bool _hasSearched = false;
 
   @override
   void initState() {
@@ -31,6 +34,8 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchController.text = '';
       setState(() => _isInitialState = true);
     });
+    _searchResults = widget.initialBooks ?? [];
+    _hasSearched = widget.initialBooks != null;
   }
 
   @override
@@ -41,6 +46,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _performSearch(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = widget.initialBooks ?? [];
+        _hasSearched = widget.initialBooks != null;
+      });
+      return;
+    }
+
     if (mounted) {
       setState(() {
         _isLoading = true;
@@ -51,14 +64,23 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      final searchService = Provider.of<SearchService>(context, listen: false);
-      final results = await searchService.searchBooks(query.trim());
-      if (mounted) {
-        setState(() {
-          _searchResults = results;
-          _isLoading = false;
-        });
-      }
+      final searchTerms = query.toLowerCase().split(' ');
+      
+      setState(() {
+        _searchResults = (widget.initialBooks ?? []).where((book) {
+          final title = book.title.toLowerCase();
+          final author = book.author.toLowerCase();
+          final description = book.description.toLowerCase();
+          
+          return searchTerms.every((term) =>
+            title.contains(term) ||
+            author.contains(term) ||
+            description.contains(term)
+          );
+        }).toList();
+        _hasSearched = true;
+        _isLoading = false;
+      });
     } catch (e) {
       if (mounted) {
         setState(() {
