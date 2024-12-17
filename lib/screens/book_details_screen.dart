@@ -6,6 +6,7 @@ import '../models/book.dart';
 import '../providers/cart_provider.dart';
 import '../providers/wishlist_provider.dart';
 import '../constants/styles.dart';
+import './book_preview_screen.dart';
 
 class BookDetailsScreen extends StatelessWidget {
   final Book book;
@@ -60,7 +61,6 @@ class BookDetailsScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.share_rounded),
                 onPressed: () {
-                  // TODO: Implement share functionality
                   Fluttertoast.showToast(
                     msg: 'Share functionality coming soon!',
                     backgroundColor: Colors.grey[600],
@@ -105,36 +105,61 @@ class BookDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     book.author,
-                    style: AppStyles.bodyStyle,
+                    style: AppStyles.bodyStyle.copyWith(
+                      color: AppStyles.subtitleColor,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildInfoChip(
+                      Icon(
                         Icons.star_rounded,
-                        '${book.rating}',
+                        color: Colors.amber[600],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        book.rating.toString(),
+                        style: AppStyles.bodyStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(width: 16),
-                      _buildInfoChip(
-                        Icons.menu_book_rounded,
+                      Icon(
+                        Icons.book_rounded,
+                        color: Colors.grey[600],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
                         '${book.pages} pages',
+                        style: AppStyles.bodyStyle,
                       ),
                       const SizedBox(width: 16),
-                      _buildInfoChip(
+                      Icon(
                         Icons.language_rounded,
+                        color: Colors.grey[600],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
                         book.language,
+                        style: AppStyles.bodyStyle,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'About this book',
-                    style: AppStyles.headingStyle,
+                    style: AppStyles.subheadingStyle,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     book.description,
-                    style: AppStyles.bodyStyle,
+                    style: AppStyles.bodyStyle.copyWith(
+                      color: AppStyles.subtitleColor,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -148,107 +173,86 @@ class BookDetailsScreen extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                flex: 2,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Price',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[600],
+                      style: AppStyles.bodyStyle.copyWith(
+                        color: AppStyles.subtitleColor,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          '\$${book.price.toStringAsFixed(2)}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        if (book.isDiscounted) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            '\$${book.originalPrice.toStringAsFixed(2)}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              decoration: TextDecoration.lineThrough,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ],
+                    Text(
+                      '\$${book.price.toStringAsFixed(2)}',
+                      style: AppStyles.headingStyle.copyWith(
+                        color: AppStyles.primaryColor,
+                      ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 16),
               Expanded(
-                flex: 3,
-                child: Consumer<CartProvider>(
-                  builder: (context, cart, _) {
-                    final isInCart = cart.items.containsKey(book.id);
-                    return ElevatedButton(
-                      onPressed: () {
-                        if (!isInCart) {
-                          cart.addItem(book);
-                          Fluttertoast.showToast(
-                            msg: '${book.title} added to cart',
-                            backgroundColor: Colors.green,
-                          );
-                        } else {
-                          Navigator.pushNamed(context, '/cart');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: isInCart
-                            ? AppStyles.successColor
-                            : AppStyles.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        isInCart ? 'Go to Cart' : 'Add to Cart',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    final cart = Provider.of<CartProvider>(context, listen: false);
+                    cart.addItem(book);
+                    Fluttertoast.showToast(
+                      msg: '${book.title} added to cart',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.black87,
+                      textColor: Colors.white,
                     );
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppStyles.primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Add to Cart',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookPreviewScreen(book: book),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppStyles.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: AppStyles.primaryColor),
+                  ),
+                ),
+                child: const Text(
+                  'Preview',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: Colors.grey[600]),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
       ),
     );
   }

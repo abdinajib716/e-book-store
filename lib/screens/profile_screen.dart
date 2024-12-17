@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'John Doe',
+                      'Karshe',
                       style: AppStyles.headingStyle,
                     ),
                   ],
