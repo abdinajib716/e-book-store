@@ -7,7 +7,19 @@
     "imageAssetPath": "assets/books/images/mucjisada_aroortii.jpg",
     "pdfAssetPath": "assets/books/pdfs/mucjisada_aroortii.pdf",
     "rating": 5.0,
-    "categories": ["Somali Literature", "Self-Help"],
+    "categories": [
+      {
+        "id": "somali_literature",
+        "name": "Somali Literature",
+        "description": "Buugaagta Suugaanta iyo Afka Soomaaliga",
+        "books": [
+          "mucjisada_aroortii",
+          "dheefta_suugaanta",
+          "daawada_jaceylka"
+        ]
+      },
+      "Self-Help"
+    ],
     "description": "Buuggani wuxuu si cilmiyeysan uga hadlayaa sida aad subax walba ugu bilowdo ficillo dhiirrigelinaya, kaas oo kuu horseedi kara guulo weyn noloshaada.",
     "language": "Somali",
     "pages": 304,
@@ -90,13 +102,25 @@
     "imageAssetPath": "assets/books/images/xakameynta_waqtiga.jpg",
     "pdfAssetPath": "assets/books/pdfs/xakameynta_waqtiga.pdf",
     "rating": 4.8,
-    "categories": ["Somali Literature", "Self-Help"],
+    "categories": [
+      {
+        "id": "somali_literature",
+        "name": "Somali Literature",
+        "description": "Buugaagta Suugaanta iyo Afka Soomaaliga",
+        "books": [
+          "mucjisada_aroortii",
+          "dheefta_suugaanta",
+          "daawada_jaceylka"
+        ]
+      },
+      "Self-Help"
+    ],
     "description": "Buuggani wuxuu si cilmiyeysan uga hadlayaa sida waqtiga loo maareeyo iyo habka looga hortago waxyaalaha waqtiga lumiyo. Waxaa laga tarjumay buugga Brian Tracy oo khabiir ku ah maaraynta waqtiga.",
     "language": "Somali",
     "pages": 98,
     "publisher": "Somali Library",
     "publishedDate": "2024",
     "isbn": "978-99999-999-9"
-}
-
+  }
+  
 ]

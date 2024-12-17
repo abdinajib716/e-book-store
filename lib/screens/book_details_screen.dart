@@ -82,8 +82,9 @@ class BookDetailsScreen extends StatelessWidget {
                           : '${book.title} added to wishlist';
                       Fluttertoast.showToast(
                         msg: message,
-                        backgroundColor:
-                            isInWishlist ? AppStyles.errorColor : AppStyles.successColor,
+                        backgroundColor: isInWishlist
+                            ? AppStyles.errorColor
+                            : AppStyles.successColor,
                       );
                     },
                   );
@@ -126,7 +127,7 @@ class BookDetailsScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Text(
+                  const Text(
                     'About this book',
                     style: AppStyles.headingStyle,
                   ),

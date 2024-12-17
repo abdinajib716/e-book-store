@@ -44,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'John Doe',
                       style: AppStyles.headingStyle,
                     ),
@@ -128,7 +128,7 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Sign Out',
                         style: AppStyles.subheadingStyle,
                       ),

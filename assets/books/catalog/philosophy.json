@@ -1,0 +1,10 @@
+{
+  "category": {
+    "id": "philosophy",
+    "name": "Philosophy",
+    "description": "Buugaag Falsafad",
+    "books": [
+      "falsafadda_jiraalnimadu"
+    ]
+  }
+}

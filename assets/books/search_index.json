@@ -3,10 +3,9 @@
     {
       "id": "xakameynta_waqtiga",
       "title": "Xakameynta Waqtiga",
-      "author": "Unknown",
-      "description": "Buug ku saabsan sida loo maareeyo waqtiga si wax ku ool ah.",
+      "author": "Brian Tracy",
       "categories": ["Self-Help", "Time Management"],
-      "searchTerms": ["xakameynta", "waqtiga", "self help", "time management"]
+      "searchTerms": ["xakameynta", "waqtiga", "self help", "time management", "brian tracy"]
     },
     {
       "id": "mucjisada_aroortii",
@@ -20,14 +19,14 @@
       "title": "Falsafadda Jiraalnimadu Waa Insaannimo",
       "author": "Jaan Bool Saartar",
       "categories": ["Philosophy", "Humanism"],
-      "searchTerms": ["falsafad", "jiraalnimo", "insaannimo", "philosophy"]
+      "searchTerms": ["falsafad", "jiraalnimo", "insaannimo", "philosophy", "humanism"]
     },
     {
       "id": "50_talooyin_caafimaad",
       "title": "50 Talooyin Caafimaad Ah",
-      "author": "Ibnu Qayyim Al-Jawziyah",
-      "categories": ["Health", "Islamic Teachings"],
-      "searchTerms": ["caafimaad", "talo", "ibnu qayyim", "islamic", "health"]
+      "author": "Dr. Maxamed Warsame Jaamac",
+      "categories": ["Health", "Self-Help"],
+      "searchTerms": ["caafimaad", "talo", "health", "self help", "dr maxamed warsame jaamac"]
     },
     {
       "id": "arimaha_somalia",
@@ -44,11 +43,53 @@
       "searchTerms": ["chatgpt", "ai", "technology", "artificial intelligence", "prompt"]
     },
     {
-      "id": "xakameynta_waqtiga",
-      "title": "Xakameynta Waqtiga",
-      "author": "Brian Tracy (Tarjumay: Nuurdeeq Cabdullaahi Xaashe)",
-      "categories": ["Somali Literature", "Self-Help"],
-      "searchTerms": ["xakameynta", "waqtiga", "brian tracy", "self help", "guul", "subax"]
+      "id": "daawada_jaceylka",
+      "title": "Daawada Jaceylka",
+      "author": "Hassan Sheikow",
+      "categories": ["Self-Help", "Relationships", "Emotional Healing"],
+      "searchTerms": ["daawada", "jaceyl", "qalbi", "xiriir", "relationship", "healing", "self help"]
+    },
+    {
+      "id": "dheefta_suugaanta",
+      "title": "Dheefta Suugaanta",
+      "author": "Tawakal Cabdi Ismaaciil (Abwaan Xays)",
+      "categories": ["Literature", "Somali Culture", "Education"],
+      "searchTerms": ["dheef", "suugaan", "dhaqan", "somali", "literature", "education", "abwaan"]
+    },
+    {
+      "id": "forex_beginner_complete",
+      "title": "Forex Beginner Complete",
+      "author": "Mohamed Elmi Isse",
+      "categories": ["Finance", "Forex Trading", "Self-Help"],
+      "searchTerms": ["forex", "trading", "ganacsi", "maalgashi", "finance", "beginner"]
+    },
+    {
+      "id": "inankeygiyoo",
+      "title": "Inankeygiyoo",
+      "author": "Sh. Ali Al-Tantawi",
+      "categories": ["Self-Help", "Youth Guidance", "Spiritual"],
+      "searchTerms": ["inan", "dhalinyaro", "hagid", "youth", "guidance", "spiritual", "self help"]
+    },
+    {
+      "id": "casharo_nololeed",
+      "title": "Casharo Nololeed: Xasuusihii Sheekh Cali Al-Dandaawi",
+      "author": "Cabdi Jabbaar Dawla",
+      "categories": ["Biography", "Islamic Teachings"],
+      "searchTerms": ["casharo", "nololeed", "sheekh cali al-dandaawi", "biography", "islamic teachings"]
+    },
+    {
+      "id": "48_sharci_ee_awooda",
+      "title": "48 Sharci ee Awooda",
+      "author": "Ismail Abdi Ismail",
+      "categories": ["Self-Help", "Leadership", "Power Dynamics"],
+      "searchTerms": ["sharci", "awooda", "self help", "leadership", "power dynamics"]
+    },
+    {
+      "id": "qisooyinka_nabiyada",
+      "title": "Qisooyinka Nabiyada",
+      "author": "Unknown",
+      "categories": ["Religion", "Islamic Stories", "History"],
+      "searchTerms": ["qisooyin", "nabiyada", "religion", "islamic stories", "history"]
     }
   ]
 }

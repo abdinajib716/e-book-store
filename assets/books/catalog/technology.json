@@ -1,0 +1,10 @@
+{
+  "category": {
+    "id": "technology",
+    "name": "Technology",
+    "description": "Buugaag Tignoolaji",
+    "books": [
+      "baro_chatgpt_prompts"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "categories": [
+    {
+      "id": "self_help",
+      "name": "Self-Help",
+      "icon": "psychology",
+      "color": "#5C6BC0",
+      "description": "Buugaag Horumar Shaqsiyeed"
+    },
+    {
+      "id": "somali_literature",
+      "name": "Somali Literature",
+      "icon": "book",
+      "color": "#2196F3",
+      "description": "Buugaagta Suugaanta iyo Afka Soomaaliga"
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "icon": "healing",
+      "color": "#EC407A",
+      "description": "Buugaag Caafimaad"
+    },
+    {
+      "id": "philosophy",
+      "name": "Philosophy",
+      "icon": "psychology_alt",
+      "color": "#7E57C2",
+      "description": "Buugaag Falsafad"
+    },
+    {
+      "id": "technology",
+      "name": "Technology",
+      "icon": "computer",
+      "color": "#66BB6A",
+      "description": "Buugaag Tignoolaji"
+    },
+    {
+      "id": "leadership",
+      "name": "Leadership",
+      "icon": "groups",
+      "color": "#FF7043",
+      "description": "Buugaag Hoggaamin"
+    },
+    {
+      "id": "religion",
+      "name": "Religion",
+      "icon": "mosque",
+      "color": "#26A69A",
+      "description": "Buugaag Diini ah"
+    }
+  ]
+}

@@ -41,6 +41,30 @@
       "currency": "USD",
       "discounted": false,
       "originalPrice": 19.99
+    },
+    "daawada_jaceylka": {
+      "price": 19.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 24.99
+    },
+    "dheefta_suugaanta": {
+      "price": 24.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 29.99
+    },
+    "forex_beginner_complete": {
+      "price": 29.99,
+      "currency": "USD",
+      "discounted": false,
+      "originalPrice": 29.99
+    },
+    "inankeygiyoo": {
+      "price": 21.99,
+      "currency": "USD",
+      "discounted": true,
+      "originalPrice": 24.99
     }
   },
   "currencies": {

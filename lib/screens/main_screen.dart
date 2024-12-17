@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
             _selectedIndex = index;
           });
         },
-        destinations: [
+        destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined, color: AppStyles.subtitleColor),
             selectedIcon: Icon(Icons.home, color: AppStyles.primaryColor),

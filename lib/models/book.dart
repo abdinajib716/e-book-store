@@ -11,6 +11,7 @@ class Book {
   final String language;
   final int pages;
   final double rating;
+  final List<String> categories;
 
   Book({
     required this.id,
@@ -25,6 +26,7 @@ class Book {
     this.language = 'Somali',
     this.pages = 0,
     this.rating = 0.0,
+    this.categories = const [],
   });
 
   factory Book.fromJson(Map<String, dynamic> json, [Map<String, dynamic>? priceInfo]) {
@@ -44,6 +46,7 @@ class Book {
       language: json['language'] ?? 'Somali',
       pages: json['pages'] ?? 0,
       rating: (json['rating'] ?? 0.0).toDouble(),
+      categories: (json['categories'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 
@@ -53,16 +56,15 @@ class Book {
       'title': title,
       'author': author,
       'description': description,
-      'image': imageAssetPath.split('/').last,
-      'pdf': pdfAssetPath.split('/').last,
+      'imageAssetPath': imageAssetPath,
+      'pdfAssetPath': pdfAssetPath,
+      'price': price,
+      'originalPrice': originalPrice,
+      'isDiscounted': isDiscounted,
       'language': language,
       'pages': pages,
       'rating': rating,
-      'priceInfo': {
-        'price': price,
-        'originalPrice': originalPrice,
-        'discounted': isDiscounted,
-      },
+      'categories': categories,
     };
   }
 }

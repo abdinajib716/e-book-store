@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           ),
           navigationBarTheme: NavigationBarThemeData(
             indicatorColor: AppStyles.primaryColor.withOpacity(0.1),
-            labelTextStyle: MaterialStateProperty.all(
+            labelTextStyle: WidgetStateProperty.all(
               AppStyles.bodyStyle.copyWith(fontSize: 12),
             ),
           ),

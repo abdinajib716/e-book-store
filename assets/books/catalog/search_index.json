@@ -11,7 +11,42 @@
   },
   "xakameynta_waqtiga": {
     "title": "Xakameynta Waqtiga",
-    "author": "Brian Tracy (Tarjumay: Nuurdeeq Cabdullaahi Xaashe)",
+    "author": "Unknown",
+    "category": "self_help"
+  },
+  "50_talooyin_caafimaad": {
+    "title": "50 Talooyin Caafimaad Ah",
+    "author": "Ibnu Qayyim Al-Jawziyah",
+    "category": "health"
+  },
+  "arimaha_somalia": {
+    "title": "Arimaha ka Taagan Soomaaliya Maxaa Xal u ah?",
+    "author": "Sheekh Dr. Cuthmaan Macallim Maxamuud",
+    "category": "politics"
+  },
+  "baro_chatgpt_prompts": {
+    "title": "Hada Baro ChatGPT Prompts",
+    "author": "Mahamed Yasin Mohamoud",
+    "category": "technology"
+  },
+  "daawada_jaceylka": {
+    "title": "Daawada Jaceylka",
+    "author": "Hassan Sheikow",
+    "category": "self_help"
+  },
+  "dheefta_suugaanta": {
+    "title": "Dheefta Suugaanta",
+    "author": "Tawakal Cabdi Ismaaciil (Abwaan Xays)",
+    "category": "literature"
+  },
+  "forex_beginner_complete": {
+    "title": "Forex Beginner Complete",
+    "author": "Mohamed Elmi Isse",
+    "category": "finance"
+  },
+  "inankeygiyoo": {
+    "title": "Inankeygiyoo",
+    "author": "Sh. Ali Al-Tantawi (Turjume: Abdiaziz Ali Sheikh)",
     "category": "self_help"
   }
 }

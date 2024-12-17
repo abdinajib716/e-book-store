@@ -11,7 +11,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Cart',
           style: AppStyles.headingStyle,
         ),
@@ -25,17 +25,17 @@ class CartScreen extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: Text(
+                        title: const Text(
                           'Clear Cart',
                           style: AppStyles.headingStyle,
                         ),
-                        content: Text(
+                        content: const Text(
                           'Are you sure you want to clear your cart?',
                           style: AppStyles.bodyStyle,
                         ),
                         actions: [
                           TextButton(
-                            child: Text(
+                            child: const Text(
                               'Cancel',
                               style: AppStyles.bodyStyle,
                             ),
@@ -44,7 +44,8 @@ class CartScreen extends StatelessWidget {
                           TextButton(
                             child: Text(
                               'Clear',
-                              style: AppStyles.bodyStyle.copyWith(color: AppStyles.errorColor),
+                              style: AppStyles.bodyStyle
+                                  .copyWith(color: AppStyles.errorColor),
                             ),
                             onPressed: () {
                               cart.clear();
@@ -77,14 +78,16 @@ class CartScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
-                    style: AppStyles.subheadingStyle.copyWith(color: Colors.grey),
+                    style:
+                        AppStyles.subheadingStyle.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(
                       'Continue Shopping',
-                      style: AppStyles.bodyStyle.copyWith(color: Theme.of(context).primaryColor),
+                      style: AppStyles.bodyStyle
+                          .copyWith(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ],

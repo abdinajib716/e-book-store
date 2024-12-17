@@ -1,0 +1,14 @@
+{
+  "category": {
+    "id": "self_help",
+    "name": "Self-Help",
+    "description": "Buugaag Horumar Shaqsiyeed",
+    "books": [
+      "xakameynta_waqtiga",
+      "mucjisada_aroortii",
+      "50_talooyin_caafimaad",
+      "daawada_jaceylka",
+      "inankeygiyoo"
+    ]
+  }
+}

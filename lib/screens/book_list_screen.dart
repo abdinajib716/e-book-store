@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 import '../widgets/book_card.dart';
-import 'book_details_screen.dart';
 
 class BookListScreen extends StatelessWidget {
   final String title;

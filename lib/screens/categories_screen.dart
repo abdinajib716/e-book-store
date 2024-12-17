@@ -1,202 +1,190 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../widgets/category_card.dart';
-import './book_list_screen.dart';
-import '../services/book_service.dart';
+import 'package:flutter/services.dart';
 import '../constants/styles.dart';
+import '../services/book_service.dart';
+import '../models/book.dart';
+import './book_list_screen.dart';
+import './search_screen.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
 
-  static const List<Map<String, dynamic>> categories = [
-    {
-      'title': 'Somali Literature',
-      'icon': Icons.auto_stories,
-      'color': Colors.blue,
-      'category': 'somali_literature'
-    },
-    {
-      'title': 'Fiction',
-      'icon': Icons.menu_book,
-      'color': Colors.green,
-      'category': 'fiction'
-    },
-    {
-      'title': 'Non-Fiction',
-      'icon': Icons.library_books,
-      'color': Colors.orange,
-      'category': 'non_fiction'
-    },
-    {
-      'title': 'Children',
-      'icon': Icons.child_care,
-      'color': Colors.purple,
-      'category': 'children'
-    },
-    {
-      'title': 'Education',
-      'icon': Icons.school,
-      'color': Colors.red,
-      'category': 'education'
-    },
-    {
-      'title': 'History',
-      'icon': Icons.history_edu,
-      'color': Colors.brown,
-      'category': 'history'
-    },
-    {
-      'title': 'Religion',
-      'icon': Icons.mosque,
-      'color': Colors.teal,
-      'category': 'religion'
-    },
-    {
-      'title': 'Poetry',
-      'icon': Icons.format_quote,
-      'color': Colors.indigo,
-      'category': 'poetry'
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  List<dynamic> categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      final String response = await rootBundle.loadString('assets/books/categories.json');
+      final data = await json.decode(response);
+      setState(() {
+        categories = data['categories'];
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error loading categories: $e',
+              style: AppStyles.bodyStyle,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
-  ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text('Discover Books',
-            style: AppStyles.headingStyle),
+        title: const Text('Discover Books', style: AppStyles.headingStyle),
         actions: [
           IconButton(
             icon: const Icon(Icons.search_rounded),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.tune_rounded),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Text(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
               'Categories',
               style: AppStyles.subheadingStyle,
             ),
-          ),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.1,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return CategoryCard(
-                  icon: category['icon'],
-                  title: category['title'],
-                  color: category['color'],
-                  onTap: () async {
-                    try {
-                      final bookService = BookService();
-                      final books = await bookService.loadBooksByCategory(
-                        category['category'],
-                      );
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BookListScreen(
-                              title: category['title'],
-                              books: books,
-                            ),
-                          ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return InkWell(
+                    onTap: () async {
+                      try {
+                        final bookService = BookService();
+                        final List<Book> books = await bookService.loadBooksByCategory(
+                          category['id'],
                         );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error loading books: $e',
-                              style: AppStyles.bodyStyle,
+                        
+                        if (books.isEmpty) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('No books found in this category'),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookListScreen(
+                                title: category['name'],
+                                books: books,
+                              ),
                             ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                          );
+                        }
+                      } catch (e) {
+                        print('Error loading books: $e');
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Error loading books: $e',
+                                style: AppStyles.bodyStyle,
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
-                    }
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CategoryCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Color color;
-  final VoidCallback onTap;
-
-  const CategoryCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.7),
-                color,
-              ],
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 48,
-                color: Theme.of(context).textTheme.bodyLarge?.color,
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(int.parse(category['color'].substring(1, 7), radix: 16) + 0xFF000000),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _getIconData(category['icon']),
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            category['name'],
+                            style: AppStyles.bodyStyle.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: AppStyles.bodyStyle,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'book':
+        return Icons.book;
+      case 'psychology':
+        return Icons.psychology;
+      case 'healing':
+        return Icons.healing;
+      case 'psychology_alt':
+        return Icons.psychology_alt;
+      case 'computer':
+        return Icons.computer;
+      case 'groups':
+        return Icons.groups;
+      case 'mosque':
+        return Icons.mosque;
+      default:
+        return Icons.book;
+    }
   }
 }

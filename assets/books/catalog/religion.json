@@ -1,0 +1,12 @@
+{
+  "category": {
+    "id": "religion",
+    "name": "Religion",
+    "description": "Buugaag Diini ah",
+    "books": [
+      "qisooyinka_nabiyada",
+      "arimaha_somalia",
+      "casharo_nololeed"
+    ]
+  }
+}
