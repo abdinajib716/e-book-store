@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../constants/styles.dart';
 import '../models/book.dart';
 import '../services/search_service.dart';
+import '../services/book_service.dart';
 import '../widgets/book_card.dart';
 import '../widgets/book_card_skeleton.dart';
 import '../widgets/cart_badge.dart';
@@ -20,6 +21,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   final _debouncer = Debouncer();
+  late final SearchService _searchService;
   List<Book> _searchResults = [];
   bool _isLoading = false;
   bool _hasError = false;
@@ -30,6 +32,9 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    final bookService = BookService();
+    _searchService = SearchService(bookService);
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchController.text = '';
       setState(() => _isInitialState = true);
@@ -64,23 +69,15 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      final searchTerms = query.toLowerCase().split(' ');
+      final results = await _searchService.searchBooks(query);
       
-      setState(() {
-        _searchResults = (widget.initialBooks ?? []).where((book) {
-          final title = book.title.toLowerCase();
-          final author = book.author.toLowerCase();
-          final description = book.description.toLowerCase();
-          
-          return searchTerms.every((term) =>
-            title.contains(term) ||
-            author.contains(term) ||
-            description.contains(term)
-          );
-        }).toList();
-        _hasSearched = true;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _searchResults = results;
+          _hasSearched = true;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
         setState(() {

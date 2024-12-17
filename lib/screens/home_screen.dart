@@ -1,11 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:provider/provider.dart';
 import '../constants/styles.dart';
 import '../services/book_service.dart';
 import '../models/book.dart';
+import '../providers/cart_provider.dart';
+import '../widgets/cart_badge.dart';
+import '../widgets/book_card.dart';
 import './book_details_screen.dart';
 import './search_screen.dart';
+import './cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,11 +75,11 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              // TODO: Implement cart functionality
-            },
+          CartBadge(
+            child: IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              onPressed: () => Navigator.pushNamed(context, '/cart'),
+            ),
           ),
         ],
       ),
@@ -240,99 +245,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: _allBooks.length,
                       itemBuilder: (context, index) {
                         final book = _allBooks[index];
-                        return _buildBookCard(book);
+                        return BookCard(book: book);
                       },
                     ),
                   ],
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildBookCard(Book book) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookDetailsScreen(book: book),
-          ),
-        );
-      },
-      child: Container(
-        decoration: AppStyles.cardDecoration,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.asset(
-                  book.imageAssetPath,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book.title,
-                    style: AppStyles.bodyStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    book.author,
-                    style: AppStyles.bodyStyle.copyWith(
-                      color: AppStyles.subtitleColor,
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '\$${book.price.toStringAsFixed(2)}',
-                        style: AppStyles.bodyStyle.copyWith(
-                          color: AppStyles.primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add_shopping_cart),
-                        onPressed: () {
-                          // TODO: Implement add to cart
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${book.title} added to cart'),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                        color: AppStyles.primaryColor,
-                        iconSize: 20,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

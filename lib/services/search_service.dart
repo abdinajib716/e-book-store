@@ -118,19 +118,18 @@ class SearchService {
 
       if (maxScore > 0.0) {
         final String bookId = bookData['id'] as String;
-        final Book? book = await _bookService.getBookById(bookId);
-        
+        final book = await _bookService.getBookById(bookId);
         if (book != null) {
-          if (!results.containsKey(bookId) || results[bookId]!.score < maxScore) {
-            results[bookId] = SearchResult(book, maxScore, bestMatchType);
-          }
+          results[bookId] = SearchResult(book, maxScore, bestMatchType);
         }
       }
     }
 
+    // Sort results by score in descending order
     final List<SearchResult> sortedResults = results.values.toList()
       ..sort((a, b) => b.score.compareTo(a.score));
-      
+
+    // Return only the Book objects in sorted order
     return sortedResults.map((result) => result.book).toList();
   }
 

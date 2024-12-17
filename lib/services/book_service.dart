@@ -5,6 +5,7 @@ import '../models/book.dart';
 class BookService {
   static final BookService _instance = BookService._internal();
   List<Book>? _cachedBooks;
+  Map<String, String>? _categoryNameMap;
 
   factory BookService() {
     return _instance;
@@ -53,6 +54,28 @@ class BookService {
     }
   }
 
+  Future<Map<String, String>> _loadCategoryMap() async {
+    if (_categoryNameMap != null) {
+      return _categoryNameMap!;
+    }
+
+    try {
+      final String response = await rootBundle.loadString('assets/books/categories.json');
+      final data = json.decode(response);
+      final categories = List<Map<String, dynamic>>.from(data['categories']);
+      
+      _categoryNameMap = {
+        for (var category in categories)
+          _normalizeCategory(category['name'] as String): category['id'] as String
+      };
+      
+      return _categoryNameMap!;
+    } catch (e) {
+      print('Error loading category map: $e');
+      return {};
+    }
+  }
+
   String _normalizeCategory(String category) {
     // Convert to lowercase and remove special characters
     return category.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '_');
@@ -62,72 +85,47 @@ class BookService {
     try {
       print('\nLoading books for category: $categoryId');
       
-      // Load all books first
+      // Load all books and categories
       final allBooks = await loadAllBooks();
-      print('Total books loaded: ${allBooks.length}');
+      final categoryMap = await _loadCategoryMap();
       
-      // Try to load the category file
+      // Get the category name from categories.json
       String? categoryName;
-      List<String> bookIds = [];
-      
       try {
-        final String categoryJson = await rootBundle.loadString('assets/books/catalog/$categoryId.json');
-        final categoryData = json.decode(categoryJson);
+        final String categoriesJson = await rootBundle.loadString('assets/books/categories.json');
+        final categoriesData = json.decode(categoriesJson);
+        final categories = List<Map<String, dynamic>>.from(categoriesData['categories']);
         
-        if (categoryData.containsKey('category')) {
-          final category = categoryData['category'];
-          categoryName = category['name'] as String;
-          bookIds = List<String>.from(category['books']);
-          print('Loaded from category file - Name: $categoryName, Book IDs: $bookIds');
-        }
+        final category = categories.firstWhere((c) => c['id'] == categoryId);
+        categoryName = category['name'] as String;
+        print('Found category name from categories.json: $categoryName');
       } catch (e) {
-        print('Category file not found, falling back to books.json categories');
-      }
-      
-      // If category file wasn't found, get the category name from categories.json
-      if (categoryName == null) {
-        try {
-          final String categoriesJson = await rootBundle.loadString('assets/books/categories.json');
-          final categoriesData = json.decode(categoriesJson);
-          final categories = List<Map<String, dynamic>>.from(categoriesData['categories']);
-          
-          final category = categories.firstWhere((c) => c['id'] == categoryId);
-          categoryName = category['name'] as String;
-          print('Found category name from categories.json: $categoryName');
-        } catch (e) {
-          print('Error loading category name: $e');
-          return [];
-        }
+        print('Error loading category name: $e');
+        return [];
       }
       
       if (categoryName == null) {
         print('Could not find category name');
         return [];
       }
-      
-      // Filter books that match either the ID or category name
+
+      // Filter books that match the category
       final normalizedCategoryName = _normalizeCategory(categoryName);
       print('Normalized category name: $normalizedCategoryName');
       
       final categoryBooks = allBooks.where((book) {
-        // Check if book ID is in the category's book list
-        final matchById = bookIds.contains(book.id);
-        
-        // Check if book's categories contain this category name
-        final matchByCategory = book.categories.any((cat) {
+        // Check if any of the book's categories match this category
+        return book.categories.any((cat) {
           final normalizedBookCategory = _normalizeCategory(cat);
           final matches = normalizedBookCategory == normalizedCategoryName;
           print('Comparing book category "$cat" ($normalizedBookCategory) with "$categoryName" ($normalizedCategoryName): $matches');
           return matches;
         });
-        
-        print('Book "${book.title}": matchById=$matchById, matchByCategory=$matchByCategory');
-        return matchById || matchByCategory;
       }).toList();
       
       print('\nFound ${categoryBooks.length} books in category "$categoryName":');
       for (var book in categoryBooks) {
-        print('- ${book.title} (ID: ${book.id})');
+        print('- ${book.title} (Categories: ${book.categories.join(", ")})');
       }
       
       return categoryBooks;
