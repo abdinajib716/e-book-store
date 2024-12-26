@@ -29,10 +29,13 @@ class Book {
     this.categories = const [],
   });
 
-  factory Book.fromJson(Map<String, dynamic> json, [Map<String, dynamic>? priceInfo]) {
+  factory Book.fromJson(Map<String, dynamic> json,
+      [Map<String, dynamic>? priceInfo]) {
     final price = (priceInfo?['price'] ?? json['price'] ?? 19.99).toDouble();
-    final originalPrice = (priceInfo?['originalPrice'] ?? json['originalPrice'] ?? price).toDouble();
-    
+    final originalPrice =
+        (priceInfo?['originalPrice'] ?? json['originalPrice'] ?? price)
+            .toDouble();
+
     return Book(
       id: json['id'] ?? '',
       title: json['title'] ?? '',
@@ -46,7 +49,10 @@ class Book {
       language: json['language'] ?? 'Somali',
       pages: json['pages'] ?? 0,
       rating: (json['rating'] ?? 0.0).toDouble(),
-      categories: (json['categories'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      categories: (json['categories'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 

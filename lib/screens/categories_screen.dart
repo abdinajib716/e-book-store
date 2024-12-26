@@ -90,8 +90,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     onTap: () async {
                       try {
                         final bookService = BookService();
-                        final List<Book> books = await bookService.loadBooksByCategory(
-                          category['id'],
+                        final List<Book> books = await bookService.getBooksByCategory(
+                          category['name'],
                         );
                         
                         if (books.isEmpty) {

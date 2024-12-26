@@ -5,7 +5,6 @@ import '../models/book.dart';
 class BookService {
   static final BookService _instance = BookService._internal();
   List<Book>? _cachedBooks;
-  Map<String, String>? _categoryNameMap;
 
   factory BookService() {
     return _instance;
@@ -36,7 +35,7 @@ class BookService {
       _cachedBooks = booksData.map<Book>((json) {
         try {
           final book = Book.fromJson(json);
-          print('Successfully parsed book: ${book.title} with categories: ${book.categories}');
+          print('Successfully parsed book: ${book.title}');
           return book;
         } catch (e) {
           print('Error parsing book: $json');
@@ -54,88 +53,6 @@ class BookService {
     }
   }
 
-  Future<Map<String, String>> _loadCategoryMap() async {
-    if (_categoryNameMap != null) {
-      return _categoryNameMap!;
-    }
-
-    try {
-      final String response = await rootBundle.loadString('assets/books/categories.json');
-      final data = json.decode(response);
-      final categories = List<Map<String, dynamic>>.from(data['categories']);
-      
-      _categoryNameMap = {
-        for (var category in categories)
-          _normalizeCategory(category['name'] as String): category['id'] as String
-      };
-      
-      return _categoryNameMap!;
-    } catch (e) {
-      print('Error loading category map: $e');
-      return {};
-    }
-  }
-
-  String _normalizeCategory(String category) {
-    // Convert to lowercase and remove special characters
-    return category.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '_');
-  }
-
-  Future<List<Book>> loadBooksByCategory(String categoryId) async {
-    try {
-      print('\nLoading books for category: $categoryId');
-      
-      // Load all books and categories
-      final allBooks = await loadAllBooks();
-      final categoryMap = await _loadCategoryMap();
-      
-      // Get the category name from categories.json
-      String? categoryName;
-      try {
-        final String categoriesJson = await rootBundle.loadString('assets/books/categories.json');
-        final categoriesData = json.decode(categoriesJson);
-        final categories = List<Map<String, dynamic>>.from(categoriesData['categories']);
-        
-        final category = categories.firstWhere((c) => c['id'] == categoryId);
-        categoryName = category['name'] as String;
-        print('Found category name from categories.json: $categoryName');
-      } catch (e) {
-        print('Error loading category name: $e');
-        return [];
-      }
-      
-      if (categoryName == null) {
-        print('Could not find category name');
-        return [];
-      }
-
-      // Filter books that match the category
-      final normalizedCategoryName = _normalizeCategory(categoryName);
-      print('Normalized category name: $normalizedCategoryName');
-      
-      final categoryBooks = allBooks.where((book) {
-        // Check if any of the book's categories match this category
-        return book.categories.any((cat) {
-          final normalizedBookCategory = _normalizeCategory(cat);
-          final matches = normalizedBookCategory == normalizedCategoryName;
-          print('Comparing book category "$cat" ($normalizedBookCategory) with "$categoryName" ($normalizedCategoryName): $matches');
-          return matches;
-        });
-      }).toList();
-      
-      print('\nFound ${categoryBooks.length} books in category "$categoryName":');
-      for (var book in categoryBooks) {
-        print('- ${book.title} (Categories: ${book.categories.join(", ")})');
-      }
-      
-      return categoryBooks;
-    } catch (e, stackTrace) {
-      print('\nError loading books by category: $e');
-      print('Stack trace: $stackTrace');
-      return [];
-    }
-  }
-
   Future<Book?> getBookById(String id) async {
     try {
       final allBooks = await loadAllBooks();
@@ -146,6 +63,36 @@ class BookService {
     } catch (e) {
       print('Error getting book by ID: $e');
       return null;
+    }
+  }
+
+  Future<List<Book>> getBooksByCategory(String category) async {
+    try {
+      final allBooks = await loadAllBooks();
+      return allBooks.where((book) => 
+        book.categories.any((cat) => 
+          cat.toLowerCase() == category.toLowerCase()
+        )
+      ).toList();
+    } catch (e) {
+      print('Error getting books by category: $e');
+      return [];
+    }
+  }
+
+  Future<List<Book>> searchBooks(String query) async {
+    try {
+      final books = await loadAllBooks();
+      query = query.toLowerCase();
+      return books.where((book) {
+        return book.title.toLowerCase().contains(query) ||
+            book.author.toLowerCase().contains(query) ||
+            book.description.toLowerCase().contains(query) ||
+            book.categories.any((category) => category.toLowerCase().contains(query));
+      }).toList();
+    } catch (e) {
+      print('Error searching books: $e');
+      return [];
     }
   }
 }
