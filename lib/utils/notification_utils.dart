@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/styles.dart';
+import '../core/constants/styles.dart';
 
 class NotificationUtils {
   static void showError({
@@ -23,6 +23,19 @@ class NotificationUtils {
       SnackBar(
         content: Text(message),
         backgroundColor: AppStyles.successColor,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  static void showInfo({
+    required BuildContext context,
+    required String message,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppStyles.primaryColor,
         behavior: SnackBarBehavior.floating,
       ),
     );

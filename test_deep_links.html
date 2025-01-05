@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Deep Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Deep Links</h1>
+    
+    <h2>Custom Scheme</h2>
+    <button onclick="openDeepLink('bookstore://reset-password?token=test123')" class="button">
+        Test Custom Scheme Deep Link
+    </button>
+    
+    <h2>HTTPS Scheme (for production)</h2>
+    <button onclick="openDeepLink('https://bookstore.com/reset-password?token=test123')" class="button">
+        Test HTTPS Deep Link
+    </button>
+
+    <h2>Test Different Tokens</h2>
+    <div id="tokenLinks"></div>
+
+    <script>
+        function openDeepLink(url) {
+            console.log('Opening URL:', url);
+            
+            // Try multiple approaches
+            // 1. Window location
+            window.location.href = url;
+            
+            // 2. Window open
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 100);
+            
+            // 3. Create and click a link
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = url;
+                link.click();
+            }, 200);
+        }
+
+        const tokens = ['test123', 'expired_token', 'invalid_token'];
+        const container = document.getElementById('tokenLinks');
+        
+        tokens.forEach(token => {
+            const customButton = document.createElement('button');
+            customButton.className = 'button';
+            customButton.textContent = `Test with token: ${token} (Custom Scheme)`;
+            customButton.onclick = () => openDeepLink(`bookstore://reset-password?token=${token}`);
+            container.appendChild(customButton);
+            
+            const httpsButton = document.createElement('button');
+            httpsButton.className = 'button';
+            httpsButton.textContent = `Test with token: ${token} (HTTPS)`;
+            httpsButton.onclick = () => openDeepLink(`https://bookstore.com/reset-password?token=${token}`);
+            container.appendChild(httpsButton);
+        });
+    </script>
+</body>
+</html>

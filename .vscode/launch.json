@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Book Store (Local)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=local"
+            ]
+        },
+        {
+            "name": "Book Store (Vercel Dev)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "Book Store (Production)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=prod",
+                "--release"
+            ]
+        }
+    ]
+}

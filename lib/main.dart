@@ -1,52 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'providers/cart_provider.dart';
-import 'providers/wishlist_provider.dart';
-import 'services/book_service.dart';
-import 'services/search_service.dart';
-import 'routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_links/app_links.dart';
+import 'dart:async';
 
-void main() {
-  runApp(const MyApp());
+import 'core/constants/styles.dart';
+import 'presentation/providers/auth_provider.dart';
+import 'presentation/providers/cart_provider.dart';
+import 'presentation/providers/wishlist_provider.dart';
+import 'data/services/auth_service.dart';
+import 'data/services/book_service.dart';
+import 'data/services/search_service.dart';
+import 'data/datasources/auth_local_datasource.dart';
+import 'data/datasources/auth_remote_datasource.dart';
+import 'data/services/api_client.dart';
+import 'presentation/routes/routes.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+
+  // Initialize dependencies
+  final apiClient = ApiClient();
+  final authLocalDataSource = AuthLocalDataSourceImpl(prefs: prefs);
+  final authRemoteDataSource = AuthRemoteDataSourceImpl(apiClient: apiClient);
+
+  final authService = AuthService(
+    localDataSource: authLocalDataSource,
+    remoteDataSource: authRemoteDataSource,
+  );
+
+  // Initialize AppLinks
+  final appLinks = AppLinks();
+
+  runApp(MyApp(
+    authService: authService,
+    appLinks: appLinks,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final AuthService authService;
+  final AppLinks appLinks;
+
+  const MyApp({
+    super.key,
+    required this.authService,
+    required this.appLinks,
+  });
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription<Uri>? _linkSubscription;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _setupDeepLinkHandling();
+  }
+
+  Future<void> _setupDeepLinkHandling() async {
+    // Handle initial URI
+    try {
+      final initialUri = await widget.appLinks.getInitialAppLinkString();
+      if (initialUri != null) {
+        _handleDeepLink(Uri.parse(initialUri));
+      }
+    } catch (e) {
+      debugPrint('Error handling initial deep link: $e');
+    }
+
+    // Handle incoming links when app is running
+    _linkSubscription = widget.appLinks.uriLinkStream.listen(
+      (Uri? uri) {
+        if (uri != null) {
+          _handleDeepLink(uri);
+        }
+      },
+      onError: (err) {
+        debugPrint('Error handling deep link: $err');
+      },
+    );
+  }
+
+  void _handleDeepLink(Uri uri) {
+    if (uri.path.startsWith('/reset-password')) {
+      final token = uri.queryParameters['token'];
+      if (token != null) {
+        _navigatorKey.currentState?.pushNamed(
+          Routes.resetPassword,
+          arguments: {'token': token},
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(
+            authService: widget.authService,
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         Provider(create: (_) => BookService()),
         ProxyProvider<BookService, SearchService>(
-          update: (context, bookService, previous) => 
+          update: (context, bookService, previous) =>
               SearchService(bookService),
         ),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, auth, _) => MaterialApp(
-          title: 'Somali Library',
+          navigatorKey: _navigatorKey,
+          title: 'Book Store',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF1E88E5),
+            primaryColor: AppStyles.primaryColor,
+            textTheme: GoogleFonts.poppinsTextTheme(
+              Theme.of(context).textTheme,
             ),
-            textTheme: GoogleFonts.poppinsTextTheme(),
-            useMaterial3: true,
           ),
-          initialRoute: Routes.language,
-          routes: Routes.getRoutes(),
+          initialRoute: auth.isAuthenticated ? Routes.home : Routes.language,
           onGenerateRoute: (settings) {
-            // Check if route requires authentication
-            if (Routes.requiresAuth(settings.name ?? '') && !auth.isAuthenticated) {
-              // Redirect to login if not authenticated
+            if (Routes.requiresAuth(settings.name ?? '') &&
+                !auth.isAuthenticated) {
               return PageRouteBuilder(
                 settings: settings,
-                pageBuilder: (context, _, __) => Routes.getRoutes()[Routes.login]!(context),
+                pageBuilder: (context, _, __) =>
+                    Routes.getRoutes()[Routes.login]!(context),
                 transitionsBuilder: _buildTransition,
               );
             }
@@ -61,18 +155,6 @@ class MyApp extends StatelessWidget {
               );
             }
             return null;
-          },
-          onUnknownRoute: (settings) {
-            return MaterialPageRoute(
-              builder: (ctx) => Scaffold(
-                body: Center(
-                  child: Text(
-                    'Boggan ma jiro',
-                    style: Theme.of(ctx).textTheme.headlineSmall,
-                  ),
-                ),
-              ),
-            );
           },
           debugShowCheckedModeBanner: false,
         ),
