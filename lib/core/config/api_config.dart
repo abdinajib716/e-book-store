@@ -1,8 +1,8 @@
 class ApiConfig {
   static const bool isProduction = true;
   
-  static const String productionUrl = 'https://karshe-bookstore.vercel.app';
-  static const String developmentUrl = 'http://localhost:5000';
+  static const String productionUrl = 'https://karshe-bookstore-backend.vercel.app';
+  static const String developmentUrl = 'http://10.0.2.2:5000';
   
   static String get baseUrl => isProduction ? productionUrl : developmentUrl;
   
