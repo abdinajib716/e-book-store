@@ -16,6 +16,7 @@ import 'data/datasources/auth_local_datasource.dart';
 import 'data/datasources/auth_remote_datasource.dart';
 import 'data/services/api_client.dart';
 import 'presentation/routes/routes.dart';
+import 'presentation/screens/auth/reset_password_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

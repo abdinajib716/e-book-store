@@ -1,7 +1,7 @@
 class AppConfig {
   static const String localApiUrl = 'http://10.0.2.2:5000/api';
-  static const String devApiUrl = 'https://karshe-bookstore.vercel.app/api';
-  static const String prodApiUrl = 'https://karshe-bookstore.kokapk.com/api';
+  static const String devApiUrl = 'https://karshe-bookstore-backend.vercel.app/api';
+  static const String prodApiUrl = 'https://karshe-bookstore-backend.vercel.app/api';
 
   // Environment names
   static const String local = 'local';
