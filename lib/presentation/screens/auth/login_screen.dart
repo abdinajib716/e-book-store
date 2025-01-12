@@ -50,17 +50,39 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
+      final authProvider = context.read<AuthProvider>();
+      
       try {
-        await context.read<AuthProvider>().login(
-              _emailController.text,
-              _passwordController.text,
-            );
-        if (mounted) {
+        final success = await authProvider.login(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        if (!mounted) return;
+
+        if (success && authProvider.currentUser != null) {
           NotificationUtils.showSuccess(
             context: context,
             message: 'Login successful!',
           );
-          Navigator.pushReplacementNamed(context, Routes.home);
+          
+          // Wait for the success message to show
+          await Future.delayed(const Duration(milliseconds: 500));
+          
+          if (!mounted) return;
+          
+          // Navigate to home screen
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            Routes.home,
+            (route) => false, // Clear the navigation stack
+          );
+        } else {
+          // Login failed but no exception was thrown
+          NotificationUtils.showError(
+            context: context,
+            message: authProvider.error ?? 'Login failed. Please try again.',
+          );
         }
       } catch (e) {
         if (!mounted) return;
@@ -72,42 +94,26 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             context: context,
             message: message,
           );
-          Future.delayed(const Duration(milliseconds: 1500), () {
-            if (mounted) {
-              Navigator.pushNamed(
-                context,
-                Routes.register,
-                arguments: _emailController.text,
-              );
-            }
-          });
+          await Future.delayed(const Duration(milliseconds: 1500));
+          
+          if (!mounted) return;
+          
+          Navigator.pushNamed(
+            context,
+            Routes.register,
+            arguments: _emailController.text,
+          );
         } else if (message.contains('incorrect password')) {
           NotificationUtils.showError(
             context: context,
             message: message,
           );
           _passwordController.clear();
-          if (mounted) {
-            FocusScope.of(context).requestFocus(_passwordFocusNode);
-          }
-        } else if (message.contains('verify your email')) {
-          NotificationUtils.showInfo(
-            context: context,
-            message: message,
-          );
-          Future.delayed(const Duration(milliseconds: 1500), () {
-            if (mounted) {
-              Navigator.pushNamed(
-                context,
-                Routes.emailVerification,
-                arguments: _emailController.text,
-              );
-            }
-          });
+          FocusScope.of(context).requestFocus(_passwordFocusNode);
         } else {
           NotificationUtils.showError(
             context: context,
-            message: message,
+            message: 'An error occurred. Please try again.',
           );
         }
       }

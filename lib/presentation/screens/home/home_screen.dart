@@ -36,9 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _allBooks = books;
           // Randomly select 5 books for the featured carousel
           final random = Random();
-          _featuredBooks = List.from(books)
-            ..shuffle(random)
-            ..take(min(5, books.length)).toList();
+          final shuffledBooks = List<Book>.from(books)..shuffle(random);
+          _featuredBooks = shuffledBooks.take(min(5, books.length)).toList();
           _isLoading = false;
         });
       }

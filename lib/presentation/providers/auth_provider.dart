@@ -94,30 +94,37 @@ class AuthProvider with ChangeNotifier {
   Future<bool> login(String email, String password) async {
     _setLoading(true);
     _error = null;
+    _status = AuthStatus.authenticating;
+    
     try {
       final user = await _authService.login(email, password);
+      
+      // Ensure we have valid user data
+      if (user == null) {
+        throw ApiException(message: 'Invalid login response: User data is null');
+      }
+
+      // Update state in a consistent order
       _currentUser = user;
       _status = AuthStatus.authenticated;
+      
+      // Start timers after successful authentication
       _startTokenRefresh();
       _startSessionTimer();
+      
+      // Notify listeners of state change
       notifyListeners();
+      
       return true;
     } catch (e) {
-      if (e is ApiException) {
-        _error = e.message;
-        _status = AuthStatus.error;
-        notifyListeners();
-        rethrow;
-      }
-      _error = e.toString();
       _status = AuthStatus.error;
+      _error = e is ApiException ? e.message : e.toString();
+      _currentUser = null;
       notifyListeners();
-      throw ApiException(
-        message: _error!,
-        statusCode: 500,
-      );
+      return false;
     } finally {
       _setLoading(false);
+      notifyListeners();
     }
   }
 

@@ -15,16 +15,57 @@ class AuthService {
 
   Future<UserModel> login(String email, String password) async {
     try {
+      print('Starting login process for email: $email');
+      
+      // Attempt login
       final response = await _remoteDataSource.login(email, password);
-      final user = UserModel.fromJson(response['data']['user']);
-      final token = response['data']['token'] as String;
+      
+      if (response == null) {
+        print('Null response from remote data source');
+        throw ApiException(message: 'Server returned no response');
+      }
 
-      await _localDataSource.saveUser(user);
-      await _localDataSource.saveAuthToken(token);
+      print('Processing login response: ${response.toString()}');
+
+      // Extract and validate data
+      final data = response['data'];
+      if (data == null || data is! Map<String, dynamic>) {
+        print('Invalid data structure in response');
+        throw ApiException(message: 'Invalid response format');
+      }
+
+      // Extract and validate user data
+      final userData = data['user'];
+      if (userData == null || userData is! Map<String, dynamic>) {
+        print('Invalid user data in response');
+        throw ApiException(message: 'Invalid user data format');
+      }
+
+      // Extract and validate token
+      final token = data['token'];
+      if (token == null || token is! String) {
+        print('Invalid token in response');
+        throw ApiException(message: 'Invalid authentication token');
+      }
+
+      // Create user model
+      final user = UserModel.fromJson(userData);
+      print('User model created successfully');
+
+      // Save authentication data
+      await Future.wait([
+        _localDataSource.saveUser(user),
+        _localDataSource.saveAuthToken(token),
+      ]);
+      print('User data and token saved locally');
 
       return user;
     } catch (e) {
-      rethrow;
+      print('Error during login process: $e');
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException(message: 'Login failed: ${e.toString()}');
     }
   }
 

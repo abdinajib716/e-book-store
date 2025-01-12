@@ -56,7 +56,8 @@ class Routes {
       },
       forgotPassword: (context) => const ForgotPasswordScreen(),
       resetPassword: (context) {
-        final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        final args =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
         return ResetPasswordScreen(token: args?['token']);
       },
       registrationSuccess: (context) {
@@ -69,20 +70,19 @@ class Routes {
       cart: (context) => const CartScreen(),
       wishlist: (context) => const WishlistScreen(),
       profile: (context) => const ProfileScreen(),
-
-      // Book Routes
       bookDetails: (context) {
-        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final args =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
         return BookDetailsScreen(book: args['book']);
       },
       bookPreview: (context) {
-        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final args =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
         return BookPreviewScreen(book: args['book']);
       },
-
-      // Payment Routes
       paymentMethod: (context) {
-        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+        final args =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
         return PaymentMethodScreen(
           totalAmount: args['totalAmount'],
           onPaymentSuccess: args['onPaymentSuccess'],

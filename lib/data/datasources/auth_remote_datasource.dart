@@ -21,6 +21,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
+      print('Attempting login for email: $email');
+      
       final response = await _apiClient.post(
         '/auth/login',
         body: {
@@ -28,11 +30,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': password,
         },
       );
-      return response;
+
+      // Check for success flag
+      if (response['success'] != true) {
+        print('Login failed: success flag is false');
+        throw ApiException(
+          message: response['message'] ?? 'Login failed',
+        );
+      }
+
+      // Validate user and token
+      final user = response['user'];
+      final token = response['token'];
+
+      if (user == null || token == null) {
+        print('Login failed: missing user or token');
+        throw ApiException(message: 'Invalid response: missing user or token');
+      }
+
+      // Return response in the expected format
+      return {
+        'data': {
+          'user': user,
+          'token': token,
+        }
+      };
     } on ApiException {
+      print('API Exception during login');
       rethrow;
     } catch (e) {
-      throw ApiException(message: e.toString());
+      print('Unexpected error during login: $e');
+      throw ApiException(message: 'Login failed: ${e.toString()}');
     }
   }
 

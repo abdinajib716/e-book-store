@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import '../../domain/entities/models/book.dart';
+import '../../core/config/api_config.dart';
+import '../../core/exceptions/api_exceptions.dart';
 
 class BookService {
   static final BookService _instance = BookService._internal();
@@ -19,8 +22,7 @@ class BookService {
 
     try {
       print('Starting to load books...');
-      final String response =
-          await rootBundle.loadString('assets/books/books.json');
+      final String response = await rootBundle.loadString('assets/books/books.json');
       print('Books JSON loaded successfully');
 
       final data = json.decode(response);
@@ -47,9 +49,9 @@ class BookService {
 
       print('Successfully loaded ${_cachedBooks!.length} books');
       return _cachedBooks!;
-    } catch (e, stackTrace) {
+    } catch (e) {
       print('Error loading books: $e');
-      print('Stack trace: $stackTrace');
+      print('Stack trace: ${StackTrace.current}');
       return [];
     }
   }
