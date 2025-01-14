@@ -11,7 +11,7 @@ import '../screens/auth/reset_password_screen.dart';
 import '../screens/auth/registration_success_screen.dart';
 
 // Main Screens
-import '../screens/main_screen.dart';
+import '../screens/main/main_screen.dart';
 import '../screens/cart/cart_screen.dart';
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/profile_screen.dart';

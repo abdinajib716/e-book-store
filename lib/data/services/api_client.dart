@@ -1,25 +1,52 @@
 import 'package:dio/dio.dart';
 import '../../core/exceptions/api_exceptions.dart';
 import '../../core/config/api_config.dart';
+import '../../core/services/connectivity_service.dart';
 
 class ApiClient {
   late final Dio _dio;
+  final ConnectivityService _connectivityService;
 
-  ApiClient() {
+  ApiClient({ConnectivityService? connectivityService}) 
+      : _connectivityService = connectivityService ?? ConnectivityService() {
     _dio = Dio(BaseOptions(
       baseUrl: ApiConfig.apiUrl,
       contentType: 'application/json',
       responseType: ResponseType.json,
-      validateStatus: (status) => true,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Accept': 'application/json',
+      },
+      validateStatus: (status) {
+        return status != null && status < 500;
+      },
+      // Increase timeouts
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
     ));
 
+    _setupInterceptors();
+  }
+
+  void _setupInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
+      onRequest: (options, handler) async {
+        if (!_connectivityService.isOnline) {
+          return handler.reject(
+            DioException(
+              requestOptions: options,
+              error: 'No internet connection',
+              type: DioExceptionType.connectionError,
+            ),
+          );
+        }
+
+        print('🔍 Full URL: ${options.baseUrl}${options.path}');
         print('🌐 REQUEST[${options.method}] => ${options.baseUrl}${options.path}');
         print('📤 REQUEST HEADERS: ${options.headers}');
-        print('📦 REQUEST BODY: ${options.data}');
+        if (options.data != null) {
+          print('📦 REQUEST BODY: ${options.data}');
+        }
         return handler.next(options);
       },
       onResponse: (response, handler) {
@@ -31,6 +58,21 @@ class ApiClient {
         print('❌ ERROR[${error.response?.statusCode}] => ${error.requestOptions.baseUrl}${error.requestOptions.path}');
         print('🚫 ERROR DATA: ${error.response?.data}');
         print('🔍 ERROR MESSAGE: ${error.message}');
+        
+        // Check if it's a timeout error
+        if (error.type == DioExceptionType.connectionTimeout ||
+            error.type == DioExceptionType.sendTimeout ||
+            error.type == DioExceptionType.receiveTimeout) {
+          return handler.reject(
+            DioException(
+              requestOptions: error.requestOptions,
+              error: 'Connection timed out. Please check your internet connection and try again.',
+              type: error.type,
+            ),
+          );
+        }
+        
+        // Handle other errors
         return handler.next(error);
       },
     ));
@@ -42,6 +84,14 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!_connectivityService.isOnline) {
+        throw ApiException(
+          message: 'No internet connection. Please check your network settings.',
+          isConnectionError: true,
+        );
+      }
+
       // Ensure path starts with a slash
       final cleanPath = path.startsWith('/') ? path : '/$path';
       
@@ -86,11 +136,17 @@ class ApiClient {
       print('DioException response: ${e.response?.data}');
 
       if (e.type == DioExceptionType.connectionTimeout) {
-        throw ApiException(message: 'Connection timeout. Please check your internet connection.');
+        throw ApiException(
+          message: 'Connection timeout. Please check your internet connection.',
+          isConnectionError: true,
+        );
       }
 
       if (e.type == DioExceptionType.receiveTimeout) {
-        throw ApiException(message: 'Server is taking too long to respond. Please try again.');
+        throw ApiException(
+          message: 'Server is taking too long to respond. Please try again.',
+          isConnectionError: true,
+        );
       }
 
       if (e.response?.data != null && e.response!.data is Map) {
@@ -103,7 +159,10 @@ class ApiClient {
         );
       }
 
-      throw ApiException(message: 'Network error: ${e.message}');
+      throw ApiException(
+        message: 'Network error: ${e.message}',
+        isConnectionError: true,
+      );
     } catch (e) {
       print('Unexpected error in ApiClient: $e');
       if (e is ApiException) rethrow;
@@ -116,6 +175,14 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!_connectivityService.isOnline) {
+        throw ApiException(
+          message: 'No internet connection. Please check your network settings.',
+          isConnectionError: true,
+        );
+      }
+
       final response = await _dio.get(
         endpoint,
         options: Options(headers: headers),
@@ -140,6 +207,14 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!_connectivityService.isOnline) {
+        throw ApiException(
+          message: 'No internet connection. Please check your network settings.',
+          isConnectionError: true,
+        );
+      }
+
       final response = await _dio.put(
         endpoint,
         data: body,
@@ -164,6 +239,14 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!_connectivityService.isOnline) {
+        throw ApiException(
+          message: 'No internet connection. Please check your network settings.',
+          isConnectionError: true,
+        );
+      }
+
       final response = await _dio.delete(
         endpoint,
         options: Options(headers: headers),

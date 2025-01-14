@@ -1,3 +1,4 @@
+// Flutter and third-party packages
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -5,18 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
 
+// Core imports
 import 'core/constants/styles.dart';
-import 'presentation/providers/auth_provider.dart';
-import 'presentation/providers/cart_provider.dart';
-import 'presentation/providers/wishlist_provider.dart';
+import 'core/services/connectivity_service.dart';
+
+// Data layer imports
+import 'data/services/api_client.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/book_service.dart';
 import 'data/services/search_service.dart';
 import 'data/datasources/auth_local_datasource.dart';
 import 'data/datasources/auth_remote_datasource.dart';
-import 'data/services/api_client.dart';
+
+// Presentation layer imports
+import 'presentation/providers/auth_provider.dart';
+import 'presentation/providers/cart_provider.dart';
+import 'presentation/providers/wishlist_provider.dart';
 import 'presentation/routes/routes.dart';
-import 'presentation/screens/auth/reset_password_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,6 +117,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<ConnectivityService>(
+          create: (_) => ConnectivityService(),
+          dispose: (_, service) => service.dispose(),
+        ),
         ChangeNotifierProvider(
           create: (_) => AuthProvider(
             authService: widget.authService,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../data/services/auth_service.dart';
 import '../../domain/entities/models/user.dart';
 import '../../core/exceptions/api_exceptions.dart';
+import '../../core/services/connectivity_service.dart';
 
 enum AuthStatus {
   initial,
@@ -15,6 +16,7 @@ enum AuthStatus {
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;
+  final ConnectivityService _connectivityService;
   Timer? _tokenRefreshTimer;
   Timer? _sessionTimer;
   static const sessionTimeout = Duration(hours: 24);
@@ -25,10 +27,17 @@ class AuthProvider with ChangeNotifier {
   String? _error;
   bool _isLoading = false;
   bool _rememberMe = false;
+  bool _isOnline = true;
 
   AuthProvider({
     required AuthService authService,
-  }) : _authService = authService {
+    ConnectivityService? connectivityService,
+  })  : _authService = authService,
+        _connectivityService = connectivityService ?? ConnectivityService() {
+    _connectivityService.onlineStatus.listen((isOnline) {
+      _isOnline = isOnline;
+      notifyListeners();
+    });
     _init();
   }
 
@@ -38,6 +47,7 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _currentUser != null;
   bool get rememberMe => _rememberMe;
+  bool get isOnline => _isOnline;
 
   void setRememberMe(bool value) {
     _rememberMe = value;
@@ -92,35 +102,46 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     _status = AuthStatus.authenticating;
-    
+
     try {
       final user = await _authService.login(email, password);
-      
-      // Ensure we have valid user data
-      if (user == null) {
-        throw ApiException(message: 'Invalid login response: User data is null');
-      }
 
       // Update state in a consistent order
       _currentUser = user;
       _status = AuthStatus.authenticated;
-      
+
       // Start timers after successful authentication
       _startTokenRefresh();
       _startSessionTimer();
-      
+
       // Notify listeners of state change
       notifyListeners();
-      
+
       return true;
+    } on ApiException catch (e) {
+      String errorMessage = e.message;
+
+      if (e.isConnectionError) {
+        errorMessage =
+            'Connection error. Please check your internet and try again.';
+      } else if (e.isUnauthorized) {
+        errorMessage = 'Invalid email or password';
+      } else if (e.isForbidden) {
+        errorMessage = 'Please verify your email before logging in';
+      }
+
+      _setError(errorMessage);
+      return false;
     } catch (e) {
-      _status = AuthStatus.error;
-      _error = e is ApiException ? e.message : e.toString();
-      _currentUser = null;
-      notifyListeners();
+      _setError('An unexpected error occurred. Please try again.');
       return false;
     } finally {
       _setLoading(false);
@@ -129,6 +150,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> register(String email, String password, String fullName) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
@@ -139,10 +165,20 @@ class AuthProvider with ChangeNotifier {
       _startSessionTimer();
       notifyListeners();
       return true;
+    } on ApiException catch (e) {
+      String errorMessage = e.message;
+
+      if (e.isConnectionError) {
+        errorMessage =
+            'Connection error. Please check your internet and try again.';
+      } else if (e.isClientError) {
+        errorMessage = e.message;
+      }
+
+      _setError(errorMessage);
+      return false;
     } catch (e) {
-      _error = e is ApiException ? e.message : e.toString();
-      _status = AuthStatus.error;
-      notifyListeners();
+      _setError('An unexpected error occurred. Please try again.');
       return false;
     } finally {
       _setLoading(false);
@@ -150,6 +186,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> verifyEmail(String email, String code) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
@@ -170,6 +211,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> forgotPassword(String email) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
@@ -204,6 +250,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> sendVerificationEmail(String email) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     try {
       await _authService.sendVerificationEmail(email);
@@ -217,6 +268,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> resetPassword(String token, String newPassword) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
@@ -239,6 +295,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> updateProfile(Map<String, dynamic> userData) async {
+    if (!_isOnline) {
+      _setError('No internet connection. Please check your network settings.');
+      return false;
+    }
+
     _setLoading(true);
     try {
       final updatedUser = await _authService.updateProfile(userData);
@@ -255,6 +316,11 @@ class AuthProvider with ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String? value) {
+    _error = value;
     notifyListeners();
   }
 

@@ -1,7 +1,8 @@
 class AppConfig {
-  static const String localApiUrl = 'http://10.0.2.2:5000/api';
-  static const String devApiUrl = 'https://karshe-bookstore-backend.vercel.app/api';
-  static const String prodApiUrl = 'https://karshe-bookstore-backend.vercel.app/api';
+  // API URLs
+  static const String emulatorUrl = 'http://10.0.2.2:5000';
+  static const String localDeviceUrl = 'http://192.168.100.229:5000';
+  static const String productionUrl = 'https://karshe-bookstore-backend.vercel.app';
 
   // Environment names
   static const String local = 'local';
@@ -15,24 +16,30 @@ class AppConfig {
       );
 
   // Get API URL based on environment
-  static String get apiBaseUrl {
-    switch (environment) {
-      case local:
-        return localApiUrl;
-      case prod:
-        return prodApiUrl;
-      case dev:
-      default:
-        return devApiUrl;
+  static String get baseUrl {
+    if (const bool.fromEnvironment('dart.vm.product')) {
+      return productionUrl;
     }
+    
+    // For development, determine if running on emulator or real device
+    bool isEmulator = true; // TODO: Implement proper emulator detection
+    return isEmulator ? emulatorUrl : localDeviceUrl;
   }
 
-  // Is development mode
-  static bool get isDevelopment => environment != prod;
+  // API version
+  static const String apiVersion = 'v1';
 
-  // Is production mode
-  static bool get isProduction => environment == prod;
+  // Timeouts
+  static const Duration connectTimeout = Duration(seconds: 5);
+  static const Duration receiveTimeout = Duration(seconds: 10);
+  static const Duration sendTimeout = Duration(seconds: 10);
 
-  // Is local mode
-  static bool get isLocal => environment == local;
+  // Retry configuration
+  static const int maxRetries = 3;
+  static const Duration retryDelay = Duration(seconds: 1);
+
+  // Development flags
+  static bool get isDevelopment => !const bool.fromEnvironment('dart.vm.product');
+  static bool get showDevTools => isDevelopment;
+  static bool get enableLogging => isDevelopment;
 }

@@ -1,42 +1,36 @@
 class ApiConfig {
-  // Automatically switches between development and production
+  // Development mode detection
   static bool get isProduction => const bool.fromEnvironment('dart.vm.product');
   
-  // URLs for Android Emulator
+  // Base URLs for different environments
   static const String productionUrl = 'https://karshe-bookstore-backend.vercel.app';
-  // Use 10.0.2.2 for Android Emulator (maps to localhost on host machine)
-  static const String developmentUrl = 'http://10.0.2.2:5000';
+  static const String emulatorUrl = 'http://10.0.2.2:5000';  // Android emulator
+  static const String localDeviceUrl = 'http://192.168.100.229:5000';  // Local network
   
-  // Base URL will automatically switch based on build mode
-  static String get baseUrl => isProduction ? productionUrl : developmentUrl;
+  // Base URL selection based on environment
+  static String get baseUrl {
+    if (isProduction) return productionUrl;
+    
+    // For development, try to determine if running on emulator or real device
+    bool isEmulator = false;  // You need to implement proper emulator detection
+    return isEmulator ? emulatorUrl : localDeviceUrl;
+  }
   
   // API URL with proper slash handling
   static String get apiUrl {
     final base = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    print('🌍 Using API URL: $base/api');  // Debug log
     return '$base/api';
   }
+
+  // Auth endpoints
+  static final auth = _AuthEndpoints();
   
   // Helper to create endpoint paths
   static String _endpoint(String path) {
     final cleanPath = path.startsWith('/') ? path : '/$path';
     return '$apiUrl$cleanPath';
   }
-  
-  // Auth Endpoints
-  static String get login => _endpoint('/auth/login');
-  static String get register => _endpoint('/auth/register');
-  static String get forgotPassword => _endpoint('/auth/forgot-password');
-  static String get resetPassword => _endpoint('/auth/reset-password');
-  static String get verifyEmail => _endpoint('/auth/verify-email');
-  static String get resendVerification => _endpoint('/auth/resend-verification');
-  
-  // For backward compatibility
-  static String get loginEndpoint => login;
-  static String get registerEndpoint => register;
-  static String get forgotPasswordEndpoint => forgotPassword;
-  static String get resetPasswordEndpoint => resetPassword;
-  static String get verifyEmailEndpoint => verifyEmail;
-  static String get resendVerificationEndpoint => resendVerification;
   
   // User Endpoints
   static String get profile => _endpoint('/users/profile');
@@ -68,4 +62,15 @@ class ApiConfig {
   // Retry Configuration
   static const int maxRetries = 3;
   static const int retryDelay = 1000; // 1 second
+}
+
+class _AuthEndpoints {
+  final String base = '/auth';
+  
+  String get login => '$base/login';
+  String get register => '$base/register';
+  String get forgotPassword => '$base/forgot-password';
+  String get resetPassword => '$base/reset-password';
+  String get verifyEmail => '$base/verify-email';
+  String get refreshToken => '$base/refresh-token';
 }

@@ -16,14 +16,9 @@ class AuthService {
   Future<UserModel> login(String email, String password) async {
     try {
       print('Starting login process for email: $email');
-      
+
       // Attempt login
       final response = await _remoteDataSource.login(email, password);
-      
-      if (response == null) {
-        print('Null response from remote data source');
-        throw ApiException(message: 'Server returned no response');
-      }
 
       print('Processing login response: ${response.toString()}');
 
@@ -69,9 +64,11 @@ class AuthService {
     }
   }
 
-  Future<UserModel> register(String email, String password, String fullName) async {
+  Future<UserModel> register(
+      String email, String password, String fullName) async {
     try {
-      final response = await _remoteDataSource.register(email, password, fullName);
+      final response =
+          await _remoteDataSource.register(email, password, fullName);
       final user = UserModel.fromJson(response['data']['user']);
       final token = response['data']['token'] as String;
 

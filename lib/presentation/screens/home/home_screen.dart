@@ -4,10 +4,8 @@ import 'package:card_swiper/card_swiper.dart';
 import '../../../core/constants/styles.dart';
 import '../../../domain/entities/models/book.dart';
 import '../../../data/services/book_service.dart';
-import '../widgets/cart_badge.dart';
 import '../widgets/book_card.dart';
 import '../books/book_details_screen.dart';
-import '../search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,31 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Book Store',
-          style: AppStyles.headingStyle,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchScreen(),
-                ),
-              );
-            },
-          ),
-          CartBadge(
-            child: IconButton(
-              icon: const Icon(Icons.shopping_cart),
-              onPressed: () => Navigator.pushNamed(context, '/cart'),
-            ),
-          ),
-        ],
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -89,18 +62,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // Featured Books Carousel
+                    // Featured Books Section
                     if (_featuredBooks.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'Featured Books',
-                          style: AppStyles.subheadingStyle.copyWith(
-                            color: AppStyles.primaryDarkColor,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
+                      // Featured Books Carousel
                       SizedBox(
                         height: 280,
                         child: Swiper(

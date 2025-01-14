@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import '../../../core/services/connectivity_service.dart';
 import '../../../core/constants/styles.dart';
 import '../../providers/auth_provider.dart';
 import '../../routes/routes.dart';
 import '../../../utils/notification_utils.dart';
+import 'mixins/connectivity_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +15,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin, ConnectivityMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -49,6 +51,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Future<void> _handleLogin() async {
+    if (!await checkConnectivity()) return;
+    
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
       
@@ -174,258 +178,269 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     
     return Scaffold(
       backgroundColor: AppStyles.backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenSize.width * 0.08,
-              vertical: screenSize.height * 0.04,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: screenSize.height * 0.04),
-                // App Logo with Animation
-                Center(
-                  child: Hero(
-                    tag: 'app_logo',
-                    child: Image.asset(
-                      'assets/icons/app_icon.png',
-                      height: screenSize.height * 0.15,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenSize.width * 0.08,
+                  vertical: screenSize.height * 0.04,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: screenSize.height * 0.04),
+                    // App Logo with Animation
+                    Center(
+                      child: Hero(
+                        tag: 'app_logo',
+                        child: Image.asset(
+                          'assets/icons/app_icon.png',
+                          height: screenSize.height * 0.15,
+                        ),
+                      ).animate(
+                        onPlay: (controller) => controller.repeat(reverse: true),
+                      ).scaleXY(
+                        begin: 0.95,
+                        end: 1.05,
+                        duration: const Duration(seconds: 2),
+                        curve: Curves.easeInOut,
+                      ),
                     ),
-                  ).animate(
-                    onPlay: (controller) => controller.repeat(reverse: true),
-                  ).scaleXY(
-                    begin: 0.95,
-                    end: 1.05,
-                    duration: const Duration(seconds: 2),
-                    curve: Curves.easeInOut,
-                  ),
-                ),
-                SizedBox(height: screenSize.height * 0.04),
-                // Welcome Text with Animation
-                Text(
-                  'Welcome Back!',
-                  style: AppStyles.headingStyle.copyWith(
-                    fontSize: screenSize.width * 0.07,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ).animate().slideY(
-                  begin: 0.3,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOut,
-                ),
-                SizedBox(height: screenSize.height * 0.01),
-                Text(
-                  'Sign in to continue your reading journey',
-                  style: AppStyles.bodyStyle.copyWith(
-                    color: AppStyles.subtitleColor,
-                    fontSize: screenSize.width * 0.04,
-                  ),
-                  textAlign: TextAlign.center,
-                ).animate().fadeIn(
-                  delay: const Duration(milliseconds: 300),
-                  duration: const Duration(milliseconds: 500),
-                ),
-                SizedBox(height: screenSize.height * 0.06),
-                // Login Form with Animations
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your email',
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: AppStyles.primaryColor,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppStyles.primaryColor,
-                              width: 2,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.red[400]!,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                      ).animate().slideX(
-                        begin: -0.2,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOut,
-                      ).fadeIn(),
-                      SizedBox(height: screenSize.height * 0.02),
-                      TextFormField(
-                        controller: _passwordController,
-                        focusNode: _passwordFocusNode,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your password',
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: AppStyles.primaryColor,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: AppStyles.primaryColor,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppStyles.primaryColor,
-                              width: 2,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Colors.red[400]!,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                      ).animate().slideX(
-                        begin: -0.2,
-                        delay: const Duration(milliseconds: 200),
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOut,
-                      ).fadeIn(),
-                      SizedBox(height: screenSize.height * 0.02),
-                      _buildRememberMeCheckbox().animate().fadeIn(
-                        delay: const Duration(milliseconds: 400),
+                    SizedBox(height: screenSize.height * 0.04),
+                    // Welcome Text with Animation
+                    Text(
+                      'Welcome Back!',
+                      style: AppStyles.headingStyle.copyWith(
+                        fontSize: screenSize.width * 0.07,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: screenSize.height * 0.02),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, Routes.forgotPassword);
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppStyles.primaryColor,
-                          ),
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              fontSize: screenSize.width * 0.035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ).animate().fadeIn(
-                        delay: const Duration(milliseconds: 600),
+                      textAlign: TextAlign.center,
+                    ).animate().slideY(
+                      begin: 0.3,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeOut,
+                    ),
+                    SizedBox(height: screenSize.height * 0.01),
+                    Text(
+                      'Sign in to continue your reading journey',
+                      style: AppStyles.bodyStyle.copyWith(
+                        color: AppStyles.subtitleColor,
+                        fontSize: screenSize.width * 0.04,
                       ),
-                      SizedBox(height: screenSize.height * 0.03),
-                      _buildLoginButton(authProvider.isLoading).animate().scale(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOut,
-                      ),
-                      SizedBox(height: screenSize.height * 0.03),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      textAlign: TextAlign.center,
+                    ).animate().fadeIn(
+                      delay: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 500),
+                    ),
+                    SizedBox(height: screenSize.height * 0.06),
+                    // Login Form with Animations
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            'Don\'t have an account? ',
-                            style: TextStyle(
-                              fontSize: screenSize.width * 0.035,
-                              color: AppStyles.subtitleColor,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _animationController.reverse().then((_) {
-                                Navigator.pushReplacementNamed(context, Routes.register);
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: AppStyles.primaryColor,
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Register',
-                              style: TextStyle(
-                                fontSize: screenSize.width * 0.035,
-                                fontWeight: FontWeight.w600,
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your email',
+                              prefixIcon: Icon(
+                                Icons.email_outlined,
+                                color: AppStyles.primaryColor,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppStyles.primaryColor,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.red[400]!,
+                                ),
                               ),
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              }
+                              if (!value.contains('@')) {
+                                return 'Please enter a valid email';
+                              }
+                              return null;
+                            },
+                          ).animate().slideX(
+                            begin: -0.2,
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOut,
+                          ).fadeIn(),
+                          SizedBox(height: screenSize.height * 0.02),
+                          TextFormField(
+                            controller: _passwordController,
+                            focusNode: _passwordFocusNode,
+                            obscureText: _obscurePassword,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your password',
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: AppStyles.primaryColor,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: AppStyles.primaryColor,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppStyles.primaryColor,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.red[400]!,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              if (value.length < 6) {
+                                return 'Password must be at least 6 characters';
+                              }
+                              return null;
+                            },
+                          ).animate().slideX(
+                            begin: -0.2,
+                            delay: const Duration(milliseconds: 200),
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOut,
+                          ).fadeIn(),
+                          SizedBox(height: screenSize.height * 0.02),
+                          _buildRememberMeCheckbox().animate().fadeIn(
+                            delay: const Duration(milliseconds: 400),
+                          ),
+                          SizedBox(height: screenSize.height * 0.02),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: context.read<ConnectivityService>().isOnline ? () {
+                                Navigator.pushNamed(context, Routes.forgotPassword);
+                              } : null,
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppStyles.primaryColor,
+                              ),
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  fontSize: screenSize.width * 0.035,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ).animate().fadeIn(
+                            delay: const Duration(milliseconds: 600),
+                          ),
+                          SizedBox(height: screenSize.height * 0.03),
+                          _buildLoginButton(authProvider.isLoading).animate().scale(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOut,
+                          ),
+                          SizedBox(height: screenSize.height * 0.03),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Don\'t have an account? ',
+                                style: TextStyle(
+                                  fontSize: screenSize.width * 0.035,
+                                  color: AppStyles.subtitleColor,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: context.read<ConnectivityService>().isOnline ? () {
+                                  _animationController.reverse().then((_) {
+                                    Navigator.pushReplacementNamed(context, Routes.register);
+                                  });
+                                } : null,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppStyles.primaryColor,
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  'Register',
+                                  style: TextStyle(
+                                    fontSize: screenSize.width * 0.035,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ).animate().fadeIn(
+                            delay: const Duration(milliseconds: 800),
                           ),
                         ],
-                      ).animate().fadeIn(
-                        delay: const Duration(milliseconds: 800),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+          // Add offline indicator at the top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: buildOfflineIndicator(),
+          ),
+        ],
       ),
     );
   }

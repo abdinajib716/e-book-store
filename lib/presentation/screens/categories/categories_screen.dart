@@ -5,7 +5,6 @@ import '../../../core/constants/styles.dart';
 import '../../../data/services/book_service.dart';
 import '../../../domain/entities/models/book.dart';
 import '../books/book_list_screen.dart';
-import '../search/search_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -52,19 +51,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       appBar: AppBar(
         elevation: 0,
         title: const Text('Discover Books', style: AppStyles.headingStyle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search_rounded),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchScreen(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

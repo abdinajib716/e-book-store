@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/styles.dart';
-
 import '../../providers/auth_provider.dart';
 import '../../routes/routes.dart';
 import '../../../utils/notification_utils.dart';
+import 'mixins/connectivity_mixin.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String? initialEmail;
@@ -15,8 +15,7 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
-    with SingleTickerProviderStateMixin {
+class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProviderStateMixin, ConnectivityMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -57,181 +56,189 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       backgroundColor: AppStyles.backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenSize.width * 0.08,
-              vertical: screenSize.height * 0.04,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // App Logo with Animation
-                Center(
-                  child: Hero(
-                    tag: 'app_logo',
-                    child: Image.asset(
-                      'assets/icons/app_icon.png',
-                      height: screenSize.height * 0.15,
-                    )
-                        .animate(
-                          onPlay: (controller) =>
-                              controller.repeat(reverse: true),
-                        )
-                        .scaleXY(
-                          begin: 0.95,
-                          end: 1.05,
-                          duration: const Duration(seconds: 2),
-                          curve: Curves.easeInOut,
-                        ),
-                  ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenSize.width * 0.08,
+                  vertical: screenSize.height * 0.04,
                 ),
-
-                const SizedBox(height: 24),
-
-                // Title with Animation
-                Text(
-                  'Create Account',
-                  style: AppStyles.headingStyle.copyWith(
-                    fontSize: screenSize.width * 0.07,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ).animate().slideY(
-                      begin: 0.3,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeOut,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // App Logo with Animation
+                    Center(
+                      child: Hero(
+                        tag: 'app_logo',
+                        child: Image.asset(
+                          'assets/icons/app_icon.png',
+                          height: screenSize.height * 0.15,
+                        )
+                            .animate(
+                              onPlay: (controller) =>
+                                  controller.repeat(reverse: true),
+                            )
+                            .scaleXY(
+                              begin: 0.95,
+                              end: 1.05,
+                              duration: const Duration(seconds: 2),
+                              curve: Curves.easeInOut,
+                            ),
+                      ),
                     ),
 
-                const SizedBox(height: 8),
+                    const SizedBox(height: 24),
 
-                Text(
-                  'Join our community of book lovers',
-                  style: AppStyles.bodyStyle.copyWith(
-                    color: AppStyles.subtitleColor,
-                    fontSize: screenSize.width * 0.04,
-                  ),
-                  textAlign: TextAlign.center,
-                ).animate().fadeIn(
-                      delay: const Duration(milliseconds: 300),
-                      duration: const Duration(milliseconds: 500),
-                    ),
-
-                const SizedBox(height: 32),
-
-                // Form with Staggered Animations
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      ...[
-                        _buildTextField(
-                          controller: _nameController,
-                          label: 'Full Name',
-                          hint: 'Enter your full name',
-                          icon: Icons.person_outline,
-                          validator: _validateFullName,
+                    // Title with Animation
+                    Text(
+                      'Create Account',
+                      style: AppStyles.headingStyle.copyWith(
+                        fontSize: screenSize.width * 0.07,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ).animate().slideY(
+                          begin: 0.3,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeOut,
                         ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _emailController,
-                          label: 'Email',
-                          hint: 'Enter your email',
-                          icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: _validateEmail,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _passwordController,
-                          focusNode: _passwordFocusNode,
-                          label: 'Password',
-                          hint: 'Enter your password',
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          validator: _validatePassword,
-                          onChanged: (value) => setState(() {}),
-                        ),
-                        if (_passwordController.text.isNotEmpty)
-                          _buildPasswordStrengthIndicator(
-                              _passwordController.text),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _confirmPasswordController,
-                          label: 'Confirm Password',
-                          hint: 'Confirm your password',
-                          icon: Icons.lock_outline,
-                          isConfirmPassword: true,
-                          validator: _validateConfirmPassword,
-                        ),
-                      ]
-                          .animate(
-                            interval: const Duration(milliseconds: 100),
-                          )
-                          .slideX(
-                            begin: -0.2,
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeOut,
-                          )
-                          .fadeIn(),
 
-                      const SizedBox(height: 32),
+                    const SizedBox(height: 8),
 
-                      // Register Button with Animation
-                      Consumer<AuthProvider>(
-                        builder: (context, authProvider, _) {
-                          return _buildRegisterButton(authProvider.isLoading)
+                    Text(
+                      'Join our community of book lovers',
+                      style: AppStyles.bodyStyle.copyWith(
+                        color: AppStyles.subtitleColor,
+                        fontSize: screenSize.width * 0.04,
+                      ),
+                      textAlign: TextAlign.center,
+                    ).animate().fadeIn(
+                          delay: const Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 500),
+                        ),
+
+                    const SizedBox(height: 32),
+
+                    // Form with Staggered Animations
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          ...[
+                            _buildTextField(
+                              controller: _nameController,
+                              label: 'Full Name',
+                              hint: 'Enter your full name',
+                              icon: Icons.person_outline,
+                              validator: _validateFullName,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _emailController,
+                              label: 'Email',
+                              hint: 'Enter your email',
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _validateEmail,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _passwordController,
+                              focusNode: _passwordFocusNode,
+                              label: 'Password',
+                              hint: 'Enter your password',
+                              icon: Icons.lock_outline,
+                              isPassword: true,
+                              validator: _validatePassword,
+                              onChanged: (value) => setState(() {}),
+                            ),
+                            if (_passwordController.text.isNotEmpty)
+                              _buildPasswordStrengthIndicator(
+                                  _passwordController.text),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _confirmPasswordController,
+                              label: 'Confirm Password',
+                              hint: 'Confirm your password',
+                              icon: Icons.lock_outline,
+                              isConfirmPassword: true,
+                              validator: _validateConfirmPassword,
+                            ),
+                          ]
+                              .animate(
+                                interval: const Duration(milliseconds: 100),
+                              )
+                              .slideX(
+                                begin: -0.2,
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.easeOut,
+                              )
+                              .fadeIn(),
+
+                          const SizedBox(height: 32),
+
+                          // Register Button with Animation
+                          _buildRegisterButton(authProvider.isLoading)
                               .animate()
                               .scale(
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeOut,
-                              );
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Login Link with Animation
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Already have an account? ',
-                            style: AppStyles.bodyStyle.copyWith(
-                              color: AppStyles.subtitleColor,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _animationController.reverse().then((_) {
-                                Navigator.pushReplacementNamed(
-                                    context, Routes.login);
-                              });
-                            },
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                color: AppStyles.primaryColor,
-                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Login Link with Animation
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Already have an account? ',
+                                style: AppStyles.bodyStyle.copyWith(
+                                  color: AppStyles.subtitleColor,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  _animationController.reverse().then((_) {
+                                    Navigator.pushReplacementNamed(
+                                        context, Routes.login);
+                                  });
+                                },
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    color: AppStyles.primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ).animate().fadeIn(
+                                delay: const Duration(milliseconds: 800),
+                              ),
                         ],
-                      ).animate().fadeIn(
-                            delay: const Duration(milliseconds: 800),
-                          ),
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+          // Add offline indicator at the top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: buildOfflineIndicator(),
+          ),
+        ],
       ),
     );
   }
@@ -497,12 +504,13 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   Future<void> _handleRegister() async {
+    if (!await checkConnectivity()) return;
+
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _animationController.reverse();
-      });
+      final authProvider = context.read<AuthProvider>();
+      
       try {
-        await context.read<AuthProvider>().register(
+        await authProvider.register(
               _emailController.text,
               _passwordController.text,
               _nameController.text,
