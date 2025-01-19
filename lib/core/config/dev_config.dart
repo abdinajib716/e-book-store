@@ -21,12 +21,12 @@ class DevConfig {
 
   // Connection test endpoints
   static final List<String> connectionTestUrls = [
-    'https://www.google.com',
-    'https://www.cloudflare.com',
-    'https://api.github.com',
+    'https://www.google.com',       // Most reliable
+    'https://www.cloudflare.com',   // Secondary reliable
+    'https://www.apple.com',        // Tertiary reliable
   ];
 
   // Connection timeout durations
-  static const connectionTimeout = Duration(seconds: 5);
+  static const connectionTimeout = Duration(seconds: 15);
   static const apiTimeout = Duration(seconds: 30);
 }

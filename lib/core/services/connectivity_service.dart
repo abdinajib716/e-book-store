@@ -4,20 +4,24 @@ import 'package:http/http.dart' as http;
 
 class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
-  final StreamController<bool> _onlineController =
-      StreamController<bool>.broadcast();
-  bool _isOnline = true; // Start optimistically
+  final StreamController<bool> _onlineController = StreamController<bool>.broadcast();
+  bool _isOnline = false;
   Timer? _debounceTimer;
   bool _isChecking = false;
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  int _retryCount = 0;
+  static const int _maxRetries = 3;
+  static const Duration _timeout = Duration(seconds: 10);
 
   Stream<bool> get onlineStatus => _onlineController.stream;
   bool get isOnline => _isOnline;
 
-  // Primary URLs for connectivity check
+  // Primary URLs for connectivity check, ordered by reliability
   final List<String> _connectivityCheckUrls = [
-    'https://karshe-bookstore-backend.vercel.app/api/health', // Our backend first
-    'https://www.google.com', // Fallback
+    'https://www.google.com',       // Most reliable
+    'https://www.cloudflare.com',   // Secondary reliable
+    'https://www.apple.com',        // Tertiary reliable
+    'https://karshe-bookstore-backend.vercel.app/api/health', // Our backend
   ];
 
   ConnectivityService() {
@@ -73,45 +77,17 @@ class ConnectivityService {
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       try {
-        bool hasConnection = false;
-        print('🔍 Checking internet connection...');
-
-        final results = await _connectivity.checkConnectivity();
-        final result = results is List ? (results).firstOrNull : results;
-
-        if (result == null || result == ConnectivityResult.none) {
-          print('❌ No network connectivity');
-          _updateOnlineStatus(false);
-          _isChecking = false;
-          return;
-        }
-
-        // Then verify internet access
-        for (final url in _connectivityCheckUrls) {
-          try {
-            print('🌐 Testing connection to: $url');
-            final response = await http.get(Uri.parse(url)).timeout(
-              const Duration(seconds: 3),
-              onTimeout: () {
-                print('⏰ Connection timeout for: $url');
-                throw TimeoutException('Connection timeout');
-              },
-            );
-
-            if (response.statusCode == 200) {
-              print('✅ Successfully connected to: $url');
-              hasConnection = true;
-              break;
-            } else {
-              print('⚠️ Received status ${response.statusCode} from: $url');
-            }
-          } catch (e) {
-            print('⚠️ Failed to connect to $url: $e');
-            continue;
+        if (!await _tryConnection()) {
+          if (_retryCount < _maxRetries) {
+            _retryCount++;
+            print('🔄 Retrying connection...');
+            await checkConnection();
+          } else {
+            _updateOnlineStatus(false);
           }
+        } else {
+          _retryCount = 0;
         }
-
-        _updateOnlineStatus(hasConnection);
       } catch (e) {
         print('❌ Error checking connection: $e');
         _updateOnlineStatus(false);
@@ -119,6 +95,29 @@ class ConnectivityService {
         _isChecking = false;
       }
     });
+  }
+
+  Future<bool> _tryConnection() async {
+    for (final url in _connectivityCheckUrls) {
+      try {
+        print('🌐 Testing connection to: $url');
+        final response = await http
+            .get(Uri.parse(url))
+            .timeout(_timeout);
+        
+        if (response.statusCode >= 200 && response.statusCode < 400) {
+          print('✅ Connection successful to $url');
+          _updateOnlineStatus(true);
+          return true;
+        }
+      } catch (e) {
+        print('⚠️ Failed to connect to $url: $e');
+        // Don't update status yet, try next URL
+        continue;
+      }
+    }
+    _updateOnlineStatus(false);
+    return false;
   }
 
   void _updateOnlineStatus(bool isOnline) {

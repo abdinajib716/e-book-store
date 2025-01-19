@@ -6,26 +6,27 @@ import '../config/api_config.dart';
 class ConnectivityHelper {
   // Check real internet connectivity
   static Future<bool> checkRealConnectivity() async {
-    // First try production URL
+    // Try backup URLs first for faster response
+    for (final url in DevConfig.connectionTestUrls) {
+      try {
+        final response = await http
+            .get(Uri.parse(url))
+            .timeout(DevConfig.connectionTimeout);
+        if (response.statusCode >= 200 && response.statusCode < 400) return true;
+      } catch (_) {
+        continue;
+      }
+    }
+
+    // Finally try production URL
     try {
       final response = await http
           .get(Uri.parse(ApiConfig.productionUrl))
           .timeout(DevConfig.connectionTimeout);
-      if (response.statusCode == 200) return true;
+      return response.statusCode >= 200 && response.statusCode < 400;
     } catch (_) {
-      // Production URL failed, try backup URLs
-      for (final url in DevConfig.connectionTestUrls) {
-        try {
-          final response = await http
-              .get(Uri.parse(url))
-              .timeout(DevConfig.connectionTimeout);
-          if (response.statusCode == 200) return true;
-        } catch (_) {
-          continue;
-        }
-      }
+      return false;
     }
-    return false;
   }
 
   // Check if development server is accessible (for USB debugging)

@@ -1,10 +1,14 @@
 # Flutter Wrapper
 -keep class io.flutter.app.** { *; }
--keep class io.flutter.plugin.**  { *; }
--keep class io.flutter.util.**  { *; }
--keep class io.flutter.view.**  { *; }
--keep class io.flutter.**  { *; }
--keep class io.flutter.plugins.**  { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
+
+# Connectivity Plus Plugin (Added)
+-dontwarn io.flutter.plugins.connectivity.**   # Added: Prevent warnings for connectivity_plus plugin
+-keep class io.flutter.plugins.connectivity.** { *; }   # Added: Ensure connectivity_plus classes are retained
 
 # Keep annotations and their members
 -keep class javax.annotation.** { *; }

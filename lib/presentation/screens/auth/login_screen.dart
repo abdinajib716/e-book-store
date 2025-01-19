@@ -433,12 +433,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
             ),
           ),
-          // Add offline indicator at the top
+          // Add retry button at the top
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: buildOfflineIndicator(),
+            child: buildRetryButton(
+              onRetry: () => setState(() {}),
+              text: 'Retry Connection',
+            ),
           ),
         ],
       ),
