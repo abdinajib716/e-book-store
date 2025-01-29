@@ -7,7 +7,7 @@ class ApiClient {
   late final Dio _dio;
   final ConnectivityService _connectivityService;
 
-  ApiClient({ConnectivityService? connectivityService}) 
+  ApiClient({ConnectivityService? connectivityService})
       : _connectivityService = connectivityService ?? ConnectivityService() {
     _dio = Dio(BaseOptions(
       baseUrl: ApiConfig.apiUrl,
@@ -19,9 +19,9 @@ class ApiClient {
       validateStatus: (status) {
         return status != null && status < 500;
       },
-      // Increase timeouts
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 10),
+      // Shorter timeouts for better UX
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
       sendTimeout: const Duration(seconds: 10),
     ));
 
@@ -42,7 +42,8 @@ class ApiClient {
         }
 
         print('🔍 Full URL: ${options.baseUrl}${options.path}');
-        print('🌐 REQUEST[${options.method}] => ${options.baseUrl}${options.path}');
+        print(
+            '🌐 REQUEST[${options.method}] => ${options.baseUrl}${options.path}');
         print('📤 REQUEST HEADERS: ${options.headers}');
         if (options.data != null) {
           print('📦 REQUEST BODY: ${options.data}');
@@ -50,15 +51,17 @@ class ApiClient {
         return handler.next(options);
       },
       onResponse: (response, handler) {
-        print('✅ RESPONSE[${response.statusCode}] => ${response.requestOptions.baseUrl}${response.requestOptions.path}');
+        print(
+            '✅ RESPONSE[${response.statusCode}] => ${response.requestOptions.baseUrl}${response.requestOptions.path}');
         print('📥 RESPONSE DATA: ${response.data}');
         return handler.next(response);
       },
       onError: (error, handler) {
-        print('❌ ERROR[${error.response?.statusCode}] => ${error.requestOptions.baseUrl}${error.requestOptions.path}');
+        print(
+            '❌ ERROR[${error.response?.statusCode}] => ${error.requestOptions.baseUrl}${error.requestOptions.path}');
         print('🚫 ERROR DATA: ${error.response?.data}');
         print('🔍 ERROR MESSAGE: ${error.message}');
-        
+
         // Check if it's a timeout error
         if (error.type == DioExceptionType.connectionTimeout ||
             error.type == DioExceptionType.sendTimeout ||
@@ -66,12 +69,13 @@ class ApiClient {
           return handler.reject(
             DioException(
               requestOptions: error.requestOptions,
-              error: 'Connection timed out. Please check your internet connection and try again.',
+              error:
+                  'Connection timed out. Please check your internet connection and try again.',
               type: error.type,
             ),
           );
         }
-        
+
         // Handle other errors
         return handler.next(error);
       },
@@ -87,16 +91,17 @@ class ApiClient {
       // Check connectivity before making the request
       if (!_connectivityService.isOnline) {
         throw ApiException(
-          message: 'No internet connection. Please check your network settings.',
+          message:
+              'No internet connection. Please check your network settings.',
           isConnectionError: true,
         );
       }
 
       // Ensure path starts with a slash
       final cleanPath = path.startsWith('/') ? path : '/$path';
-      
+
       print('🔍 Full URL: ${_dio.options.baseUrl}$cleanPath');
-      
+
       final response = await _dio.post(
         cleanPath,
         data: body,
@@ -120,9 +125,9 @@ class ApiClient {
       final responseData = response.data as Map<String, dynamic>;
 
       if (response.statusCode! >= 400) {
-        final message = responseData['message'] ?? 
-                       responseData['error'] ?? 
-                       'Server error occurred';
+        final message = responseData['message'] ??
+            responseData['error'] ??
+            'Server error occurred';
         throw ApiException(
           message: message.toString(),
           statusCode: response.statusCode,
@@ -150,9 +155,9 @@ class ApiClient {
       }
 
       if (e.response?.data != null && e.response!.data is Map) {
-        final message = e.response!.data['message'] ?? 
-                       e.response!.data['error'] ?? 
-                       'Network error occurred';
+        final message = e.response!.data['message'] ??
+            e.response!.data['error'] ??
+            'Network error occurred';
         throw ApiException(
           message: message.toString(),
           statusCode: e.response?.statusCode,
@@ -166,7 +171,8 @@ class ApiClient {
     } catch (e) {
       print('Unexpected error in ApiClient: $e');
       if (e is ApiException) rethrow;
-      throw ApiException(message: 'An unexpected error occurred: ${e.toString()}');
+      throw ApiException(
+          message: 'An unexpected error occurred: ${e.toString()}');
     }
   }
 
@@ -178,7 +184,8 @@ class ApiClient {
       // Check connectivity before making the request
       if (!_connectivityService.isOnline) {
         throw ApiException(
-          message: 'No internet connection. Please check your network settings.',
+          message:
+              'No internet connection. Please check your network settings.',
           isConnectionError: true,
         );
       }
@@ -210,7 +217,8 @@ class ApiClient {
       // Check connectivity before making the request
       if (!_connectivityService.isOnline) {
         throw ApiException(
-          message: 'No internet connection. Please check your network settings.',
+          message:
+              'No internet connection. Please check your network settings.',
           isConnectionError: true,
         );
       }
@@ -242,7 +250,8 @@ class ApiClient {
       // Check connectivity before making the request
       if (!_connectivityService.isOnline) {
         throw ApiException(
-          message: 'No internet connection. Please check your network settings.',
+          message:
+              'No internet connection. Please check your network settings.',
           isConnectionError: true,
         );
       }

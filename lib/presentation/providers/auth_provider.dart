@@ -5,6 +5,7 @@ import '../../data/services/auth_service.dart';
 import '../../domain/entities/models/user.dart';
 import '../../core/exceptions/api_exceptions.dart';
 import '../../core/services/connectivity_service.dart';
+import '../../core/config/api_config.dart';
 
 enum AuthStatus {
   initial,
@@ -157,27 +158,43 @@ class AuthProvider with ChangeNotifier {
 
     _setLoading(true);
     _error = null;
+
+    print("\n📡 Sending API Request...");
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    print("🌐 API URL: ${ApiConfig.apiUrl}/auth/register");
+    print("📤 Headers: ${ApiConfig.headers}");
+    print(
+        "📦 Request Body: { email: $email, password: $password, fullName: $fullName }");
+
     try {
       final user = await _authService.register(email, password, fullName);
       _currentUser = user;
       _status = AuthStatus.authenticated;
       _startTokenRefresh();
       _startSessionTimer();
+
+      print("\n✅ Registration Successful!");
+      print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
       notifyListeners();
       return true;
     } on ApiException catch (e) {
-      String errorMessage = e.message;
+      print("\n❌ Registration Failed: ${e.message}");
+      print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
+      String errorMessage = e.message;
       if (e.isConnectionError) {
         errorMessage =
             'Connection error. Please check your internet and try again.';
       } else if (e.isClientError) {
         errorMessage = e.message;
       }
-
       _setError(errorMessage);
       return false;
     } catch (e) {
+      print("\n❌ Unexpected Error: $e");
+      print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
       _setError('An unexpected error occurred. Please try again.');
       return false;
     } finally {

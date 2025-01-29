@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../routes/routes.dart';
 import '../../../utils/notification_utils.dart';
 import 'mixins/connectivity_mixin.dart';
+import '../../../core/config/api_config.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String? initialEmail;
@@ -15,7 +16,8 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProviderStateMixin, ConnectivityMixin {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin, ConnectivityMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -509,13 +511,27 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
 
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
-      
+
+      print("\n🔍 Debugging Registration Request...");
+      print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      print("📤 URL: ${ApiConfig.apiUrl}/auth/register");
+      print("📤 Headers: ${ApiConfig.headers}");
+      print("📦 Body: {");
+      print("  email: ${_emailController.text},");
+      print("  password: ${_passwordController.text},");
+      print("  fullName: ${_nameController.text}");
+      print("}");
+
       try {
         await authProvider.register(
-              _emailController.text,
-              _passwordController.text,
-              _nameController.text,
-            );
+          _emailController.text,
+          _passwordController.text,
+          _nameController.text,
+        );
+
+        print("\n✅ Registration Request Successful!");
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
         if (mounted) {
           NotificationUtils.showSuccess(
             context: context,
@@ -528,6 +544,10 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
           );
         }
       } catch (e) {
+        print("\n❌ Registration Request Failed!");
+        print("💬 Error: $e");
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
         if (!mounted) return;
 
         final message = e.toString();
