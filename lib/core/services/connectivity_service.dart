@@ -80,13 +80,15 @@ class ConnectivityService {
         if (!await _tryConnection()) {
           if (_retryCount < _maxRetries) {
             _retryCount++;
-            print('🔄 Retrying connection...');
+            print('🔄 Retrying connection... Attempt: $_retryCount');
             await checkConnection();
           } else {
             _updateOnlineStatus(false);
+            _resetCheckState();
           }
         } else {
           _retryCount = 0;
+          _updateOnlineStatus(true);
         }
       } catch (e) {
         print('❌ Error checking connection: $e');
@@ -128,10 +130,18 @@ class ConnectivityService {
     }
   }
 
+  void _resetCheckState() {
+    _isChecking = false;
+    _retryCount = 0;
+    print('🔄 Reset connectivity check state');
+  }
+
+  @override
   void dispose() {
-    print('👋 Disposing connectivity service...');
-    _connectivitySubscription?.cancel();
     _debounceTimer?.cancel();
+    _connectivitySubscription?.cancel();
     _onlineController.close();
+    _isChecking = false;
+    print('🔌 Disposing connectivity service');
   }
 }

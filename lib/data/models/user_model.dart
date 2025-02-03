@@ -17,22 +17,33 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['_id'] ?? '',
-      email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
-      phoneNumber: json['phoneNumber'],
-      profilePicture: json['profilePicture'],
-      dateOfBirth: json['dateOfBirth'] != null 
-          ? DateTime.parse(json['dateOfBirth']) 
-          : null,
-      gender: json['gender'],
-      preferredLanguage: json['preferredLanguage'] ?? 'en',
-      interests: List<String>.from(json['interests'] ?? []),
-      isEmailVerified: json['isEmailVerified'] ?? false,
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      lastLoginAt: DateTime.parse(json['lastLoginAt'] ?? DateTime.now().toIso8601String()),
-    );
+    try {
+      print('Parsing user data: $json');
+      return UserModel(
+        id: json['id'] ?? json['_id'] ?? '',
+        email: json['email'] ?? '',
+        fullName: json['fullName'] ?? '',
+        phoneNumber: json['phoneNumber'],
+        profilePicture: json['profilePicture'] ?? json['avatar'],
+        dateOfBirth: json['dateOfBirth'] != null 
+            ? DateTime.parse(json['dateOfBirth']) 
+            : null,
+        gender: json['gender'],
+        preferredLanguage: json['preferredLanguage'] ?? 'en',
+        interests: List<String>.from(json['interests'] ?? []),
+        isEmailVerified: json['isEmailVerified'] ?? false,
+        createdAt: json['createdAt'] != null 
+            ? DateTime.parse(json['createdAt'])
+            : DateTime.now(),
+        lastLoginAt: json['lastLoginAt'] != null
+            ? DateTime.parse(json['lastLoginAt'])
+            : DateTime.now(),
+      );
+    } catch (e) {
+      print('Error parsing user data: $e');
+      print('Problematic JSON: $json');
+      rethrow;
+    }
   }
 
   @override

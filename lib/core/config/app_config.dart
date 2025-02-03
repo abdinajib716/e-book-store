@@ -15,31 +15,32 @@ class AppConfig {
         defaultValue: dev,
       );
 
-  // Get API URL based on environment
-  static String get baseUrl {
-    if (const bool.fromEnvironment('dart.vm.product')) {
-      return productionUrl;
-    }
-    
-    // For development, determine if running on emulator or real device
-    bool isEmulator = true; // TODO: Implement proper emulator detection
-    return isEmulator ? emulatorUrl : localDeviceUrl;
-  }
-
-  // API version
-  static const String apiVersion = 'v1';
-
   // Timeouts
-  static const Duration connectTimeout = Duration(seconds: 5);
-  static const Duration receiveTimeout = Duration(seconds: 10);
-  static const Duration sendTimeout = Duration(seconds: 10);
+  static const Duration connectTimeout = Duration(seconds: 10);
+  static const Duration receiveTimeout = Duration(seconds: 30);
+  static const Duration sendTimeout = Duration(seconds: 30);
+  static const Duration healthCheckTimeout = Duration(seconds: 5);
 
   // Retry configuration
   static const int maxRetries = 3;
-  static const Duration retryDelay = Duration(seconds: 1);
+  static const Duration retryDelay = Duration(seconds: 2);
+  static const Duration maxRetryDelay = Duration(seconds: 10);
+
+  // Cache configuration
+  static const Duration cacheDuration = Duration(minutes: 5);
+  static const int maxCacheItems = 100;
 
   // Development flags
   static bool get isDevelopment => !const bool.fromEnvironment('dart.vm.product');
   static bool get showDevTools => isDevelopment;
   static bool get enableLogging => isDevelopment;
+
+  // Debug flags
+  static bool get verboseLogging => isDevelopment;
+  static bool get showNetworkCalls => isDevelopment;
+  static bool get showPerformanceOverlay => isDevelopment;
+
+  // Error reporting
+  static bool get reportErrors => !isDevelopment;
+  static const int maxErrorRetries = 3;
 }

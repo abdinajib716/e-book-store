@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/styles.dart';
 import '../../routes/routes.dart';
 import '../../../utils/notification_utils.dart';
+import '../../../core/exceptions/api_exceptions.dart';
 import '../../providers/auth_provider.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
   int _resendTimer = 0;
   Timer? _timer;
   late AnimationController _animationController;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -119,8 +121,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
 
   Future<void> _handleVerification() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      
       final code = _controllers.map((c) => c.text).join();
       if (code.length != 6) {
+        setState(() {
+          _isLoading = false;
+        });
         NotificationUtils.showError(
           context: context,
           message: 'Please enter the complete verification code',
@@ -129,20 +138,52 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>
       }
 
       final authProvider = context.read<AuthProvider>();
-      final success = await authProvider.verifyEmail(widget.email, code);
+      try {
+        print('🔍 Attempting verification with code: $code');
+        final success = await authProvider.verifyEmail(widget.email, code);
+        print('✅ Verification result: $success');
 
-      if (success && mounted) {
-        NotificationUtils.showSuccess(
-          context: context,
-          message: 'Email verified successfully',
-        );
-        Navigator.pushReplacementNamed(context, Routes.home);
-      } else if (mounted) {
-        NotificationUtils.showError(
-          context: context,
-          message: authProvider.error ?? 'Verification failed',
-        );
+        if (!mounted) return;
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (success) {
+          NotificationUtils.showSuccess(
+            context: context,
+            message: 'Email verified successfully',
+          );
+          Navigator.pushReplacementNamed(context, Routes.home);
+        } else {
+          NotificationUtils.showError(
+            context: context,
+            message: 'Invalid verification code. Please try again.',
+          );
+        }
+      } catch (e) {
+        print('❌ Verification error caught: $e');
+        if (!mounted) return;
+        _handleVerificationError(e);
       }
+    }
+  }
+
+  void _handleVerificationError(dynamic error) {
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (error is ApiException) {
+      NotificationUtils.showError(
+        context: context,
+        message: error.userMessage,
+      );
+    } else {
+      NotificationUtils.showError(
+        context: context,
+        message: 'Verification failed. Please try again.',
+      );
     }
   }
 

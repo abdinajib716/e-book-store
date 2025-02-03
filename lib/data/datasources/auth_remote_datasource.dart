@@ -1,5 +1,6 @@
-import '../services/api_client.dart';
+import 'package:dio/dio.dart';
 import '../../core/exceptions/api_exceptions.dart';
+import '../services/api_client.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Map<String, dynamic>> login(String email, String password);
@@ -22,7 +23,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       print('Attempting login for email: $email');
-      
+
       final response = await _apiClient.post(
         '/auth/login',
         body: {
@@ -31,36 +32,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      // Check for success flag
-      if (response['success'] != true) {
-        print('Login failed: success flag is false');
-        throw ApiException(
-          message: response['message'] ?? 'Login failed',
-        );
+      final responseData = response.data as Map<String, dynamic>;
+      print('Login response data: $responseData');
+      
+      // Validate response structure
+      if (!responseData.containsKey('success') || !responseData.containsKey('data')) {
+        print('Invalid response structure: $responseData');
+        throw ApiException(message: 'Invalid response format');
       }
 
-      // Validate user and token
-      final user = response['user'];
-      final token = response['token'];
-
-      if (user == null || token == null) {
-        print('Login failed: missing user or token');
-        throw ApiException(message: 'Invalid response: missing user or token');
-      }
-
-      // Return response in the expected format
-      return {
-        'data': {
-          'user': user,
-          'token': token,
-        }
-      };
-    } on ApiException {
-      print('API Exception during login');
-      rethrow;
+      return responseData;
     } catch (e) {
-      print('Unexpected error during login: $e');
-      throw ApiException(message: 'Login failed: ${e.toString()}');
+      print('Error during login: $e');
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException(message: e.toString());
     }
   }
 
@@ -75,10 +62,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'fullName': fullName,
         },
       );
-      return response;
-    } on ApiException {
-      rethrow;
+
+      final data = response.data;
+      if (data == null) {
+        throw ApiException(message: 'Invalid response from server');
+      }
+
+      // Ensure we return a Map<String, dynamic>
+      if (data is! Map<String, dynamic>) {
+        return {'data': data};
+      }
+
+      return data;
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -87,10 +86,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<Map<String, dynamic>> getCurrentUser() async {
     try {
       final response = await _apiClient.get('/auth/me');
-      return response;
-    } on ApiException {
-      rethrow;
+      final data = response.data as Map<String, dynamic>;
+      return {'data': data};
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -98,6 +99,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<bool> verifyEmail(String email, String code) async {
     try {
+      print('📧 Verifying email: $email with code: $code');
+      
       final response = await _apiClient.post(
         '/auth/verify-email',
         body: {
@@ -105,10 +108,33 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'code': code,
         },
       );
-      return response['success'] as bool;
-    } on ApiException {
-      rethrow;
+
+      final data = response.data;
+      print('📧 Verification response: $data');
+      
+      if (data == null) {
+        throw ApiException(message: 'Invalid response from server');
+      }
+
+      if (data is Map<String, dynamic>) {
+        // Check for any error response
+        if (data['error'] != null) {
+          throw ApiException(
+            message: data['message'] ?? 'Verification failed',
+            statusCode: response.statusCode,
+            data: data
+          );
+        }
+
+        return data['success'] == true;
+      }
+
+      throw ApiException(message: 'Invalid response format from server');
     } catch (e) {
+      print('❌ Email verification error: $e');
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -120,9 +146,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         '/auth/resend-verification',
         body: {'email': email},
       );
-    } on ApiException {
-      rethrow;
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -134,9 +161,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         '/auth/forgot-password',
         body: {'email': email},
       );
-    } on ApiException {
-      rethrow;
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -151,9 +179,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'password': newPassword,
         },
       );
-    } on ApiException {
-      rethrow;
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -165,10 +194,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         '/auth/refresh-token',
         headers: {'Authorization': 'Bearer $oldToken'},
       );
-      return response;
-    } on ApiException {
-      rethrow;
+
+      final data = response.data as Map<String, dynamic>;
+      return {'data': data};
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }
@@ -180,10 +212,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         '/auth/me',
         body: userData,
       );
-      return response;
-    } on ApiException {
-      rethrow;
+
+      final data = response.data as Map<String, dynamic>;
+      return {'data': data};
     } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: e.toString());
     }
   }

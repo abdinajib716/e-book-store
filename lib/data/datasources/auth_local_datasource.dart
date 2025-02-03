@@ -9,12 +9,17 @@ abstract class AuthLocalDataSource {
   Future<void> saveAuthToken(String token);
   Future<String?> getAuthToken();
   Future<void> clearAuthToken();
+  Future<void> saveRefreshToken(String refreshToken);
+  Future<String?> getRefreshToken();
+  Future<void> clearRefreshToken();
+  Future<void> clearAll();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final sp.SharedPreferences prefs;
   static const String userKey = 'user';
   static const String tokenKey = 'auth_token';
+  static const String refreshTokenKey = 'refresh_token';
 
   AuthLocalDataSourceImpl({required this.prefs});
 
@@ -26,10 +31,14 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<UserModel?> getUser() async {
     final userStr = prefs.getString(userKey);
-    if (userStr != null) {
+    if (userStr == null) return null;
+    
+    try {
       return UserModel.fromJson(jsonDecode(userStr));
+    } catch (e) {
+      print('Error parsing stored user data: $e');
+      return null;
     }
-    return null;
   }
 
   @override
@@ -50,5 +59,29 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<void> clearAuthToken() async {
     await prefs.remove(tokenKey);
+  }
+
+  @override
+  Future<void> saveRefreshToken(String refreshToken) async {
+    await prefs.setString(refreshTokenKey, refreshToken);
+  }
+
+  @override
+  Future<String?> getRefreshToken() async {
+    return prefs.getString(refreshTokenKey);
+  }
+
+  @override
+  Future<void> clearRefreshToken() async {
+    await prefs.remove(refreshTokenKey);
+  }
+
+  @override
+  Future<void> clearAll() async {
+    await Future.wait([
+      clearUser(),
+      clearAuthToken(),
+      clearRefreshToken(),
+    ]);
   }
 }

@@ -65,6 +65,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         if (!mounted) return;
 
         if (success && authProvider.currentUser != null) {
+          // Check if email is verified
+          if (!authProvider.currentUser!.isEmailVerified) {
+            NotificationUtils.showInfo(
+              context: context,
+              message: 'Please verify your email to continue.',
+            );
+            
+            // Navigate to email verification screen
+            Navigator.pushNamed(
+              context,
+              Routes.emailVerification,
+              arguments: _emailController.text,
+            );
+            return;
+          }
+
           NotificationUtils.showSuccess(
             context: context,
             message: 'Login successful!',
@@ -107,17 +123,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             Routes.register,
             arguments: _emailController.text,
           );
-        } else if (message.contains('incorrect password')) {
-          NotificationUtils.showError(
-            context: context,
-            message: message,
-          );
-          _passwordController.clear();
-          FocusScope.of(context).requestFocus(_passwordFocusNode);
         } else {
           NotificationUtils.showError(
             context: context,
-            message: 'An error occurred. Please try again.',
+            message: message,
           );
         }
       }
