@@ -8,7 +8,7 @@ class ApiConfig {
 
   // Base URLs for different environments
   static const String productionUrl =
-      'https://karshe-bookstore-backend.vercel.app';
+      'https://karshe-bookstore-backend.verceL.app';
   static const String emulatorUrl =
       'http://10.0.2.2:5000/api'; // Android emulator
   static const String defaultPort = '5000';
